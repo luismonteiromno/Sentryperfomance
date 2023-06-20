@@ -93,34 +93,34 @@ class CompanysViewSet(ModelViewSet):
     def companys_by_id(self, request):
         data = request.data
         try:
-            companys = tstes.objects.get(pk=data['company_id'])
-            serializer = CompanysSerializer(companys)
+            with sentry_sdk.start_transaction(op="Endpoint", name=f"Endpoint de listar companhia por id"):
+                with sentry_sdk.start_span(description=f"Listar companhia por id"):
+                    with sentry_sdk.push_scope() as scope:
+                        companys = Companys.objects.get(pk=data['company_id'])
+                        serializer = CompanysSerializer(companys)
+                        scope.set_extra("Companhia encontrada", serializer.data)
+                        add_breadcrumb(category='Companhia encontrada', message=serializer.data)
             return Response({'message': 'Empresa encontrada', 'company': serializer.data}, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
             return Response({'message': 'Empresa não encontrada'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as error:
-            with sentry_sdk.start_transaction(op="Endpoint", name=f"Erro {error} no endpoint de companhias por id"):
-                with sentry_sdk.start_span(description=f"Erro {error} no endpoint de companhias por id"):
-                    with sentry_sdk.push_scope() as scope:
-                        scope.set_extra("Erro capturado", error)
-                        add_breadcrumb(category='Exceção', message=error)
-                        sentry_sdk.capture_exception(error)
+            sentry_sdk.capture_exception(error)
             return Response({'message': 'Erro ao listar empresas'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['DELETE'], permission_classes=[IsAuthenticated])
     def delete_company(self, request):
         data = request.data
         try:
-            companys = teste.objects.get(pk=data['company_id'])
-            companys.delete()
+            with sentry_sdk.start_transaction(op="Endpoint", name=f"Endpoint de listar companhia por id"):
+                with sentry_sdk.start_span(description=f"Listar companhia por id"):
+                    with sentry_sdk.push_scope() as scope:
+                        companys = Companys.objects.get(pk=data['company_id'])
+                        scope.set_extra("Companhia encontrada", companys)
+                        add_breadcrumb(category='Companhia encontrada', message='companhia deletada')
+                        companys.delete()
             return Response({'message': 'Empresa deletada com sucesso'}, status=status.HTTP_200_OK)
         except Exception as error:
-            with sentry_sdk.start_transaction(op="Endpoint", name=f"Erro {error} no endpoint de deletar companhias"):
-                with sentry_sdk.start_span(description=f"Erro {error} no endpoint de deletar companhias"):
-                    with sentry_sdk.push_scope() as scope:
-                        scope.set_extra("Erro capturado", error)
-                        add_breadcrumb(category='Exceção', message=error)
-                        sentry_sdk.capture_exception(error)
+            sentry_sdk.capture_exception(error)
             return Response({'message': 'Erro ao deletar empresa'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
