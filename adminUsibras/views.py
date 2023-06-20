@@ -111,8 +111,8 @@ class CompanysViewSet(ModelViewSet):
     def delete_company(self, request):
         data = request.data
         try:
-            with sentry_sdk.start_transaction(op="Endpoint", name=f"Endpoint de listar companhia por id"):
-                with sentry_sdk.start_span(description=f"Listar companhia por id"):
+            with sentry_sdk.start_transaction(op="Endpoint", name=f"Endpoint de deletar companhia por id"):
+                with sentry_sdk.start_span(description=f"Deletar companhia por id"):
                     with sentry_sdk.push_scope() as scope:
                         companys = Companys.objects.get(pk=data['company_id'])
                         scope.set_extra("Companhia encontrada", companys)
