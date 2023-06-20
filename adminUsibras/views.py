@@ -25,37 +25,33 @@ class CompanysViewSet(ModelViewSet):
     def create_company(self, request):
         data = request.data
         user = request.user
-        with sentry_sdk.start_transaction(op="Endpoint de teste",
-                                          name="Inicio do endpoint de criar companhias") as transaction:
-            try:
-                start_time = datetime.now()
-                end_time = datetime.now()
-                # Define o titulo q irá aparecer no card de erro do sentry
-                # with sentry_sdk.start_transaction(op="Endpoint de teste", name=f"Inicio do endpoint de criar companhias"):
-                with transaction.start_child(op="database_query", description="Database query"):
 
-                    # Define a descrição do erro
-                        with sentry_sdk.start_span(description=f"endpoint de criar companhias"):
-                            # função q contém set_tags para personalizar a msg de erro no painel
-                            with sentry_sdk.push_scope() as scope:
-                                # set_tag cria um campo extra personalizado para exibir o erro
+        try:
 
-                                # set_tag q contem informações do erro, navegador, id do usuário e etc
-                                # scope.set_tag('user', request.user.id)
-                                companys = Companys.objects.create(
-                                    name=data['name'],
-                                    cnpj=data['cnpj']
-                                )
-                                companys.owner.add(user)
-                                scope.set_extra("Nova companhia criada", companys)
-                                add_breadcrumb(category='info', message=companys)
+            with sentry_sdk.start_transaction(op="Endpoint de teste",
+                                              name="Inicio do endpoint de criar companhias") as transaction:
+                # Define a descrição do erro
+                    with sentry_sdk.start_span(description=f"endpoint de criar companhias"):
+                        # função q contém set_tags para personalizar a msg de erro no painel
+                        with sentry_sdk.push_scope() as scope:
+                            # set_tag cria um campo extra personalizado para exibir o erro
 
-                transaction.finish()
-                return Response({'message': 'Nova empresa registrada'}, status=status.HTTP_200_OK)
-            except Exception as error:
-                print(error)
-                sentry_sdk.capture_exception(error)
-                return Response({'message': 'Error ao registrar empresa'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                            # set_tag q contem informações do erro, navegador, id do usuário e etc
+                            # scope.set_tag('user', request.user.id)
+                            companys = Companys.objects.create(
+                                name=data['name'],
+                                cnpj=data['cnpj']
+                            )
+                            companys.owner.add(user)
+                            scope.set_extra("Nova companhia criada", companys)
+                            add_breadcrumb(category='info', message=companys)
+
+            transaction.finish()
+            return Response({'message': 'Nova empresa registrada'}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            sentry_sdk.capture_exception(error)
+            return Response({'message': 'Error ao registrar empresa'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['GET'], permission_classes=[AllowAny])
     def list_companys(self, request):
