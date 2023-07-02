@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from adminUsibras.views import BooksViewSet, CompanysViewSet
+from library.views import LibraryViewSet
 
 router = routers.DefaultRouter()
 from admin_notification.views import check_notification_view
@@ -28,6 +29,7 @@ def trigger_error(request):
 
 router.register(r'books', BooksViewSet, basename="Books")
 router.register(r'companys', CompanysViewSet, basename='companys')
+router.register(r'librarys', LibraryViewSet, basename='library')
 
 admin.site.site_title = 'API - BOOKS'
 admin.site.site_header = 'BOOKS - API'
