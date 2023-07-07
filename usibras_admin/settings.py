@@ -25,7 +25,7 @@ functions_to_trace = [
 ]
 sentry_sdk.init(
     dsn="https://6d1cba8d5be045a58f29a94954720923@o4505370953187328.ingest.sentry.io/4505370954432512",
-    functions_to_trace=functions_to_trace,
+    # functions_to_trace=functions_to_trace,
     integrations=[
         DjangoIntegration(
             transaction_style='url',
@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'adminUsibras',
     'users',
+    'library',
 ]
 ADMIN_SITE_BASE_URL = 'admin/' # default is "admin/
 NOTIFICATION_MODEL = 'adminUsibras.Books'
