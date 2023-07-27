@@ -55,7 +55,7 @@ AUTH_USER_MODEL = 'users.Users'
 # Application definition
 
 INSTALLED_APPS = [
-    "admin_notification",
+    # "admin_notification",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

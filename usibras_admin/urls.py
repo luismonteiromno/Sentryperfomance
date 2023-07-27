@@ -20,7 +20,7 @@ from adminUsibras.views import BooksViewSet, CompanysViewSet
 from library.views import LibraryViewSet
 
 router = routers.DefaultRouter()
-from admin_notification.views import check_notification_view
+# from admin_notification.views import check_notification_view
 
 
 def trigger_error(request):
@@ -38,7 +38,7 @@ admin.site.index_title = 'BOOKS'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('check/notification', check_notification_view, name="check_notifications"),
+    # path('check/notification', check_notification_view, name="check_notifications"),
     path('sentry-debug/', trigger_error),
 
 ]
