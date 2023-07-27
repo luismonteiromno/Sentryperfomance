@@ -10,8 +10,12 @@ class BooksAdmin(admin.ModelAdmin):
     search_help_text = "Exemplo tal"
     list_filter = ['state', 'book_genre', 'publishing_company__name']
     search_fields = ['author__username']
-    readonly_fields = ['create_at']
     filter_horizontal = ['author']
+
+    fieldsets = (
+        ('Informações do Livro', {'fields': ('title', 'author', 'release_year', 'state', 'pages', 'book_genre', 'publishing_company')}),
+        ('Lançamento', {'fields': ('create_at',)}),
+    )
 
     @staticmethod
     def detail(request):
