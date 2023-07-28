@@ -4,5 +4,6 @@ from .models import BooksPurchases
 
 class BooksPurchasesSerializers(serializers.ModelSerializer):
     class Meta:
+        depth = 2
         model = BooksPurchases
         fields = '__all__'
