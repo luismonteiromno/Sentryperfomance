@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'adminUsibras',
     'users',
     'library',
+    'purchases',
 ]
 ADMIN_SITE_BASE_URL = 'admin/' # default is "admin/
 NOTIFICATION_MODEL = 'adminUsibras.Books'
