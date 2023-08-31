@@ -5,7 +5,7 @@ from .models import Books, Companys
 
 
 class BooksAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'state']
+    list_display = ['id', 'title', 'state', 'in_stock']
     list_per_page = 100
     search_help_text = "Exemplo tal"
     list_filter = ['state', 'book_genre', 'publishing_company__name']
@@ -13,15 +13,17 @@ class BooksAdmin(admin.ModelAdmin):
     filter_horizontal = ['author']
 
     fieldsets = (
-        ('Informações do Livro', {'fields': ('title', 'author', 'release_year', 'state', 'pages', 'book_genre', 'publishing_company')}),
+        ('Informações do Livro',
+         {'fields': ('title', 'author', 'release_year', 'state', 'pages', 'book_genre', 'publishing_company', 'in_stock')}),
         ('Lançamento', {'fields': ('create_at',)}),
     )
 
-    @staticmethod
-    def detail(request):
-        message = messages.success(request, f"Novo livro criado", )
-        print("DEPOIS DA MENSAGEM")
-        return TemplateResponse(request, 'index.html', {'message': message})
+    # @staticmethod
+    # def detail(request):
+    #     message = messages.success(request, f"Novo livro criado", )
+    #     print("DEPOIS DA MENSAGEM")
+    #     return TemplateResponse(request, 'index.html', {'message': message})
+    #
 
 
 class CompanysAdmin(admin.ModelAdmin):
