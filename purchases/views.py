@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.shortcuts import render
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
@@ -64,6 +65,8 @@ class BooksPurchasesViewSet(ModelViewSet):
             purchase = BooksPurchases.objects.get(pk=params['purchase_id'])
             serializer = BooksPurchasesSerializers(purchase)
             return Response({'message': 'Sucesso', 'books': serializer.data}, status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response({"message": 'Compra não encontrada'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as error:
             sentry_sdk.capture_exception(error)
             return Response({'message': 'Erro ao listar todos o livros comprados pelo usuário'},
