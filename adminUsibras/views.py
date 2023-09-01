@@ -155,7 +155,7 @@ class BooksViewSet(ModelViewSet):
         user = request.user
         try:
 
-            list = Books.objects.filter(user=user).order_by('create_at')
+            list = Books.objects.all().order_by('create_at')
             serializer = BooksSerializer(list, many=True)
             return Response({'message': 'Livros encontrados', 'books': serializer.data}, status=status.HTTP_200_OK)
 
