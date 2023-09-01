@@ -130,21 +130,21 @@ class BooksViewSet(ModelViewSet):
         user = request.user
         data = request.data
         try:
+            with sentry_sdk.start_transaction(op="Endpoint", name=f"Criar livro") as transaction:
+                date_str = data['create_at']
 
-            date_str = data['create_at']
+                date_object = datetime.strptime(date_str, '%d/%m/%Y').date()
 
-            date_object = datetime.strptime(date_str, '%d/%m/%Y').date()
-
-            books = Books.objects.create(
-                title=data['title'],
-                author_id=user.id,
-                release_year=data['release_year'],
-                state=data['state'],
-                pages=data['pages'],
-                publishing_company=data['publishing_company'],
-                create_at=date_object,
-            )
-            print(books)
+                books = Books.objects.create(
+                    title=data['title'],
+                    author_id=user.id,
+                    release_year=data['release_year'],
+                    state=data['state'],
+                    pages=data['pages'],
+                    publishing_company=data['publishing_company'],
+                    create_at=date_object,
+                )
+            transaction.finish()
             return Response({'message': 'Livro registrado com sucesso'}, status=status.HTTP_200_OK)
         except Exception as error:
             print(error)
@@ -152,13 +152,12 @@ class BooksViewSet(ModelViewSet):
 
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
     def list_books(self, request):
-        user = request.user
         try:
-
-            books = Books.objects.all().order_by('create_at')
-            serializer = BooksSerializer(books, many=True)
+            with sentry_sdk.start_transaction(op="Endpoint", name=f"Listar livros") as transaction:
+                books = Books.objects.all().order_by('create_at')
+                serializer = BooksSerializer(books, many=True)
+            transaction.finish()
             return Response({'message': 'Livros encontrados', 'books': serializer.data}, status=status.HTTP_200_OK)
-
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao listar livros'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -167,8 +166,10 @@ class BooksViewSet(ModelViewSet):
     def delete_books(self, request):
         data = request.query_params
         try:
-            books = Books.objects.get(pk=data['book_id'])
-            books.delete()
+            with sentry_sdk.start_transaction(op="Endpoint", name=f"Deletar livro") as transaction:
+                books = Books.objects.get(pk=data['book_id'])
+                books.delete()
+            transaction.finish()
             return Response({'message': 'Cartão deletado com sucesso!'},
                             status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
@@ -177,4 +178,19 @@ class BooksViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Nao Foi Possivel Deletar o Cartão, Entre em Contato com o Suporte.'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def search_book(self, request):
+        data = request.query_params
+        try:
+            with sentry_sdk.start_transaction(op="Endpoint", name=f"Buscar livro") as transaction:
+                books = Books.objects.filter(title__iexact=data['title'])
+                serializer = BooksSerializer(books, many=True)
+            transaction.finish()
+            return Response({'message': 'Livro encontrado', 'book': serializer.data},
+                            status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Nẫo Foi Possivel encontrar o livro'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
