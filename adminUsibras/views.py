@@ -155,8 +155,8 @@ class BooksViewSet(ModelViewSet):
         user = request.user
         try:
 
-            list = Books.objects.all().order_by('create_at')
-            serializer = BooksSerializer(list, many=True)
+            books = Books.objects.all().order_by('create_at')
+            serializer = BooksSerializer(books, many=True)
             return Response({'message': 'Livros encontrados', 'books': serializer.data}, status=status.HTTP_200_OK)
 
         except Exception as error:
