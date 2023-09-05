@@ -23,11 +23,16 @@ class LibraryViewSet(ModelViewSet):
 
     @action(detail=False, methods=['POST'], permission_classes=[IsAuthenticated])
     def create_library(self, request):
+        user = request.user
         data = request.data
         try:
             library = Librarys.objects.create(
+                owner_library_id=user.id,
                 name=data['name'],
                 address=data['address'],
+                street=data['street'],
+                number=data['number'],
+                cep=data['cep']
             )
             library.partner_companies.add(data['partner_companies'])
             return Response({'message': 'Biblioteca registrada com sucesso'}, status=status.HTTP_200_OK)

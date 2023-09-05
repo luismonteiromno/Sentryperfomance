@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.static import static
+from usibras_admin import settings
 from rest_framework import routers
 from adminUsibras.views import BooksViewSet, CompanysViewSet
 from library.views import LibraryViewSet
@@ -37,5 +39,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     # path('check/notification', check_notification_view, name="check_notifications"),
-
 ]
+
+urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

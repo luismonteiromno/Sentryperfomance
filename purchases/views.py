@@ -40,7 +40,7 @@ class BooksPurchasesViewSet(ModelViewSet):
     def books_purchase_by_user(self, request):
         user = request.user
         try:
-            books = BooksPurchases.objects.filter(user=user).order_by('date')
+            books = BooksPurchases.objects.filter(user_id=user.id).order_by('date')
             serializer = BooksPurchasesSerializers(books, many=True)
             return Response({'message': 'Sucesso', 'books': serializer.data}, status=status.HTTP_200_OK)
         except Exception as error:

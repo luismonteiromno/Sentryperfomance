@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'users',
     'library',
     'purchases',
+    'about_us'
 ]
 ADMIN_SITE_BASE_URL = 'admin/' # default is "admin/
 NOTIFICATION_MODEL = 'adminUsibras.Books'
@@ -164,14 +165,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-if not DEBUG:
-    MEDIA_ROOT = 'MEDIA_ROOT'
-    MEDIA_URL = 'MEDIA_URL'
-    STATIC_ROOT = 'STATIC_ROOT'
-    STATIC_URL = 'STATIC_URL'
-else:
-    STATIC_URL = "/static/"
-    STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_URL = 'static/'
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
