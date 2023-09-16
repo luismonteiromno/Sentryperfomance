@@ -29,12 +29,15 @@ class BooksPurchasesViewSet(ModelViewSet):
                 user_id=user.id,
                 date=now
             )
-            book = [int(book_id) for book_id in data['books_id'].split(',')]
-            books.books.add(*book)
+            # book = [int(book_id) for book_id in data['books_id'].split(',')]
+            # books.books.add(*book)
+            book = data['books_id'].split(',')
+            for purchase in book:
+                books.books.add(int(purchase))
             return Response({'message': 'Compra feita com sucesso'}, status=status.HTTP_200_OK)
         except Exception as error:
             sentry_sdk.capture_exception(error)
-            return Response({'message': 'Erro ao listar todos o livros comprados pelo usuário'},
+            return Response({'message': 'Erro efetuar compra'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
