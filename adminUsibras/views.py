@@ -135,7 +135,7 @@ class BooksViewSet(ModelViewSet):
 
                 date_object = datetime.strptime(date_str, '%d/%m/%Y').date()
 
-                books = Books.objects.create(
+                Books.objects.create(
                     title=data['title'],
                     author_id=user.id,
                     release_year=data['release_year'],
