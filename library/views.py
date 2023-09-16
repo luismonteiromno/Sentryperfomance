@@ -34,7 +34,8 @@ class LibraryViewSet(ModelViewSet):
                 number=data['number'],
                 cep=data['cep']
             )
-            library.partner_companies.add(data['partner_companies'])
+            companys = [int(id_str) for id_str in data['partner_companies'].split(',')]
+            library.partner_companies.add(*companys)
             return Response({'message': 'Biblioteca registrada com sucesso'}, status=status.HTTP_200_OK)
         except Exception as error:
             print(error)
