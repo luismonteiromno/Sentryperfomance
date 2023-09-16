@@ -29,7 +29,8 @@ class BooksPurchasesViewSet(ModelViewSet):
                 user_id=user.id,
                 date=now
             )
-            books.books.add(data['books_id'])
+            book = [int(book_id) for book_id in data['books_id'].split(',')]
+            books.books.add(*book)
             return Response({'message': 'Compra feita com sucesso'}, status=status.HTTP_200_OK)
         except Exception as error:
             sentry_sdk.capture_exception(error)
