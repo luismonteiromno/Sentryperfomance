@@ -17,6 +17,7 @@ class AboutUs(models.Model):
 
 
 class TermsOfUse(models.Model):
+    title = models.CharField('Titulo', max_length=50, default='')
     terms_of_use = models.FileField(upload_to='terms_of_use', verbose_name='Termos de Uso')
 
     def __str__(self):
