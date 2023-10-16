@@ -150,6 +150,39 @@ class BooksViewSet(ModelViewSet):
             print(error)
             return Response({'message': 'Não foi possivel registrar o seu livro'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @action(detail=False, methods=['PATCH'], permission_classes=[IsAuthenticated])
+    def update_book(self, request):
+        user = request.user
+        data = request.data
+        try:
+
+            try:
+                company = Companys.objects.get(id=data['publishing_company'])
+            except Exception as error:
+                print(error)
+                return Response({'message': 'Empresa não encontrada!'}, status=status.HTTP_404_NOT_FOUND)
+
+            book = Books.objects.get(id=data['book_id'])
+            date_str = data['create_at']
+            date_object = datetime.strptime(date_str, '%d/%m/%Y')
+            if user in book.author.all():
+                book.title = data['title']
+                book.author.id = data.get('author_ids')
+                book.release_year = data['release_year']
+                book.state = data['state']
+                book.pages = data['pages']
+                book.publishing_company = company
+                book.create_at = date_object
+                book.save()
+                return Response({'message': 'Livro atualizado com sucesso'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'Somente os autores podem atualizar este livro!'}, status=status.HTTP_401_UNAUTHORIZED)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Livro não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao atualizar livro!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
     def list_books(self, request):
         try:
