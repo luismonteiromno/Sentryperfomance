@@ -35,6 +35,9 @@ class LibraryViewSet(ModelViewSet):
                 cep=data['cep']
             )
             companies = data['partner_companies'].split(',')
+            if companies == None or '' or ' ':
+                return Response({'message': 'Preencha o campo de empresas parceiras!'}, status=status.HTTP_400_BAD_REQUEST)
+
             for company in companies:
                 library.partner_companies.add(int(company))
             return Response({'message': 'Biblioteca registrada com sucesso'}, status=status.HTTP_200_OK)
