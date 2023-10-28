@@ -29,8 +29,6 @@ class BooksPurchasesViewSet(ModelViewSet):
                 user_id=user.id,
                 date=now
             )
-            # book = [int(book_id) for book_id in data['books_id'].split(',')]
-            # books.books.add(*book)
             book = data['books_id'].split(',')
             for purchase in book:
                 books.books.add(int(purchase))
