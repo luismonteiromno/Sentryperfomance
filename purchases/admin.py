@@ -5,7 +5,7 @@ from .models import BooksPurchases
 # Register your models here.
 class BooksPurchaseAdmin(admin.ModelAdmin):
     filter_horizontal = ['books']
-    list_display = ['user']
+    list_display = ['id', 'user']
     fields = ['user', 'books', 'date']
     readonly_fields = ['date']
 
