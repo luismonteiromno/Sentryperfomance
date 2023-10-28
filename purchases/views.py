@@ -85,3 +85,14 @@ class BooksPurchasesViewSet(ModelViewSet):
             print(error)
             return Response({'message': 'Erro ao listar todos o livros comprados pelo usuário'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def search_purchase_book(self, request):
+        params = request.query_params
+        try:
+            book = BooksPurchases.objects.filter(books__title__iexact=params['book_title'])
+            serializer = BooksPurchasesSerializers(book, many=True)
+            return Response({'message': 'Livro encontrado', 'book': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao procurar compra!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
