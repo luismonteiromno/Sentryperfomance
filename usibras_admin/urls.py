@@ -17,22 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from usibras_admin import settings
-from rest_framework import routers
-from adminUsibras.views import BooksViewSet, CompanysViewSet
-from library.views import LibraryViewSet
-from purchases.views import BooksPurchasesViewSet
-from about_us.views import AboutUsViewSet, TermsOfUseViewSet
-
-router = routers.DefaultRouter()
-# from admin_notification.views import check_notification_view
-
-
-router.register(r'books', BooksViewSet, basename="Books")
-router.register(r'companys', CompanysViewSet, basename='companys')
-router.register(r'librarys', LibraryViewSet, basename='library')
-router.register(r'books_purchase', BooksPurchasesViewSet, basename='books_purchase')
-router.register(r'about_us', AboutUsViewSet, basename='books_purchase')
-router.register(r'terms_of_use', TermsOfUseViewSet, basename='books_purchase')
+from .routers import router
 
 
 admin.site.site_title = 'API - BOOKS'
@@ -42,7 +27,6 @@ admin.site.index_title = 'BOOKS'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    # path('check/notification', check_notification_view, name="check_notifications"),
 ]
 
 urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
