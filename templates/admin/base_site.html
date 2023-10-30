@@ -2,8 +2,8 @@
 {% block extrastyle %}
 <style>
   :root {
-    --primary-color: #000;
-    --primary-color-faded: #000;
+    --primary-color: #5DADE2;
+    --primary-color-faded: #5DADE2;
     --secondary-color: #000;
   }
 
@@ -32,6 +32,18 @@
           'Segoe UI Symbol';
   }
 
+  a:link, a:visited {
+    text-decoration-color: initial;
+    color: #000;
+}
+
+  a.section:link, a.section:visited {
+    color: #000;
+    font-weight: bold;
+    text-decoration-color: initial;
+}
+
+
   .app-auth module {
     color: var(--primary-color);
   }
@@ -42,7 +54,7 @@
 
   #header {
     background: var(--primary-color);
-      color: #ffffff;
+    color: #000;
   }
  #branding h1, #branding h1 a:link, #branding h1 a:visited{
       color: #ffffff !important;
@@ -132,6 +144,4 @@
 
 }
 </style>
-
-
 {% endblock %}
