@@ -26,20 +26,23 @@ class LibraryViewSet(ModelViewSet):
         user = request.user
         data = request.data
         try:
-            library = Librarys.objects.create(
-                owner_library_id=user.id,
-                name=data['name'],
-                address=data['address'],
-                street=data['street'],
-                number=data['number'],
-                cep=data['cep']
-            )
-            companies = data['partner_companies'].split(',')
-            if companies == None or '' or ' ':
-                return Response({'message': 'Preencha o campo de empresas parceiras!'}, status=status.HTTP_400_BAD_REQUEST)
+            with sentry_sdk.start_transaction(op="Endpoint", name=f"Criar livro") as transaction:
 
-            for company in companies:
-                library.partner_companies.add(int(company))
+                library = Librarys.objects.create(
+                    owner_library_id=user.id,
+                    name=data['name'],
+                    address=data['address'],
+                    street=data['street'],
+                    number=data['number'],
+                    cep=data['cep']
+                )
+                companies = data['partner_companies'].split(',')
+                if companies == None or '' or ' ':
+                    return Response({'message': 'Preencha o campo de empresas parceiras!'}, status=status.HTTP_400_BAD_REQUEST)
+
+                for company in companies:
+                    library.partner_companies.add(int(company))
+            transaction.finish()
             return Response({'message': 'Biblioteca registrada com sucesso'}, status=status.HTTP_200_OK)
         except Exception as error:
             print(error)
