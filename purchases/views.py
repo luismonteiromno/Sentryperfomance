@@ -82,7 +82,7 @@ class BooksPurchasesViewSet(ModelViewSet):
             serializer = BooksPurchasesSerializers(books, many=True)
             return Response({'message': 'Sucesso', 'books': serializer.data}, status=status.HTTP_200_OK)
         except Exception as error:
-            print(error)
+            sentry_sdk.capture_exception(error)
             return Response({'message': 'Erro ao listar todos o livros comprados pelo usuário'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -94,5 +94,5 @@ class BooksPurchasesViewSet(ModelViewSet):
             serializer = BooksPurchasesSerializers(book, many=True)
             return Response({'message': 'Livro encontrado', 'book': serializer.data}, status=status.HTTP_200_OK)
         except Exception as error:
-            print(error)
+            sentry_sdk.capture_exception(error)
             return Response({'message': 'Erro ao procurar compra!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
