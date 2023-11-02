@@ -54,9 +54,20 @@ class LibraryViewSet(ModelViewSet):
     @action(detail=False, methods=['GET'], permission_classes=[AllowAny])
     def list_librarys(self, request):
         try:
-            librarys = self.queryset
-            serializer = LibrarysSerializers(librarys, many=True)
+            libraries = self.queryset
+            serializer = LibrarysSerializers(libraries, many=True)
             return Response({'message': 'Bibliotecas encontradas', 'librarys': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao listar bibliotecas'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[AllowAny])
+    def list_libraries_deliver(self, request):
+        try:
+            libraries = Librarys.objects.filter(delivery=True)
+            serializer = LibrarysSerializers(libraries, many=True)
+            return Response({'message': 'Bibliotecas encontradas', 'libraries': serializer.data},
+                            status=status.HTTP_200_OK)
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao listar bibliotecas'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
