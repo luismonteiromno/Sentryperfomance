@@ -138,6 +138,7 @@ class BooksViewSet(ModelViewSet):
                 Books.objects.create(
                     title=data['title'],
                     author_id=user.id,
+                    price=data['price'],
                     release_year=data['release_year'],
                     state=data['state'],
                     pages=data['pages'],
@@ -168,6 +169,7 @@ class BooksViewSet(ModelViewSet):
             if user in book.author.all():
                 book.title = data['title']
                 book.author.id = data.get('author_ids')
+                book.price = data['price']
                 book.release_year = data['release_year']
                 book.state = data['state']
                 book.pages = data['pages']
@@ -187,7 +189,7 @@ class BooksViewSet(ModelViewSet):
     def list_books(self, request):
         try:
             with sentry_sdk.start_transaction(op="Endpoint", name=f"Listar livros") as transaction:
-                books = Books.objects.all().order_by('create_at')
+                books = Books.objects.all().order_by('price')
                 serializer = BooksSerializer(books, many=True)
             transaction.finish()
             return Response({'message': 'Livros encontrados', 'books': serializer.data}, status=status.HTTP_200_OK)

@@ -11,6 +11,9 @@ class Librarys(models.Model):
     number = models.CharField('Número', max_length=50)
     cep = models.CharField('Cep', max_length=12)
     partner_companies = models.ManyToManyField(Companys, verbose_name='Companhias parceiras', related_name='library_partner_companies')
+    delivery = models.BooleanField('Faz entrega?', default=True)
+    minimum_delivery = models.IntegerField('Tempo minímo de entrega', default=0, blank=True, null=True)
+    maximum_delivery = models.IntegerField('Tempo máximo de entrega', default=0, blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} - {self.address}"

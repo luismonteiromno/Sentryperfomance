@@ -31,6 +31,7 @@ class Companys(models.Model):
 
 class Books(models.Model):
     title = models.CharField('Titulo', max_length=255)
+    price = models.FloatField('Preço')
     author = models.ManyToManyField(Users, verbose_name='Autor', default='')
     release_year = models.IntegerField('Ano de lançamento')
     state = models.CharField('Estado', max_length=50, choices=BOOK_STATE, default='new')

@@ -34,7 +34,10 @@ class LibraryViewSet(ModelViewSet):
                     address=data['address'],
                     street=data['street'],
                     number=data['number'],
-                    cep=data['cep']
+                    cep=data['cep'],
+                    delivery=data['delivery'],
+                    minimum_delivery=data.get('minimum_delivery'),
+                    maximum_delivery=data.get('maximum_delivery')
                 )
                 companies = data['partner_companies'].split(',')
                 if companies == None or '' or ' ':
