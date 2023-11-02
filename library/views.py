@@ -109,3 +109,21 @@ class LibraryViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao listar bibliotecas'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def filter_time_delivery(self, request):
+        params = request.query_params
+        try:
+            minimum_delivery = params['minimum_delivery']
+            maximum_delivery = params['maximum_delivery']
+            if minimum_delivery >= maximum_delivery:
+                return Response({'message': 'O tempo minimo de entrega não pode ser menor/igual ao tempo máximo!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            libraries = Librarys.objects.filter(
+                delivery=True, minimum_delivery=minimum_delivery, maximum_delivery=maximum_delivery
+            )
+            serializer = LibrarysSerializers(libraries, many=True)
+            return Response({'message': 'Bibliotecas encontradas', 'libraries': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao listar tempo de entrega'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
