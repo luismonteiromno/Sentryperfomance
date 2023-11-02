@@ -138,6 +138,7 @@ class BooksViewSet(ModelViewSet):
                 Books.objects.create(
                     title=data['title'],
                     author_id=user.id,
+                    price=data['price'],
                     release_year=data['release_year'],
                     state=data['state'],
                     pages=data['pages'],
