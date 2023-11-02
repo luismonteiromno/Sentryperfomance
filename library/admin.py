@@ -7,7 +7,6 @@ class FormLibrary(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         delivery = cleaned_data.get('delivery')
-        print(delivery)
         minimum_delivery = cleaned_data.get('minimum_delivery')
         maximum_delivery = cleaned_data.get('maximum_delivery')
 
