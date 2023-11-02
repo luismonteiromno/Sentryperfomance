@@ -9,6 +9,7 @@ class LibraryAdmin(admin.ModelAdmin):
         ('Entrega', {'fields': ('delivery', 'minimum_delivery', 'maximum_delivery')})
     )
     filter_horizontal = ['partner_companies']
+    list_display = ['id', 'name']
 
 
 admin.site.register(Librarys, LibraryAdmin)
