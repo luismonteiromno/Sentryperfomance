@@ -27,6 +27,10 @@ class LibraryViewSet(ModelViewSet):
         data = request.data
         try:
             with sentry_sdk.start_transaction(op="Endpoint", name=f"Criar livro") as transaction:
+                companies = data['partner_companies'].split(',')
+                if not companies or all(company.strip() == '' for company in companies):
+                    return Response({'message': 'Preencha o campo de empresas parceiras!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
 
                 library = Librarys.objects.create(
                     owner_library_id=user.id,
@@ -39,9 +43,6 @@ class LibraryViewSet(ModelViewSet):
                     minimum_delivery=data.get('minimum_delivery'),
                     maximum_delivery=data.get('maximum_delivery')
                 )
-                companies = data['partner_companies'].split(',')
-                if companies == None or '' or ' ':
-                    return Response({'message': 'Preencha o campo de empresas parceiras!'}, status=status.HTTP_400_BAD_REQUEST)
 
                 for company in companies:
                     library.partner_companies.add(int(company))
@@ -50,6 +51,38 @@ class LibraryViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao registrar biblioteca'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['PATCH'], permission_classes=[IsAuthenticated])
+    def update_library(self, request):
+        user = request.user
+        data = request.data
+        try:
+            library = Librarys.objects.get(id=data['library_id'])
+            if library.owner_library_id != user.id:
+                return Response({'message': 'Apenas o dono pode atualizar à biblioteca!'}, status=status.HTTP_401_UNAUTHORIZED)
+            library.name = data['name']
+            library.address = data['address']
+            library.street = data['street']
+            library.number = data['number']
+            library.cep = data['cep']
+            library.delivery = data['delivery']
+            library.minimum_delivery = data['minimum_delivery']
+            library.maximum_delivery = data['maximum_delivery']
+            partner_companies = data['partner_companies'].split(',')
+            if not partner_companies:
+                return Response({'message': 'Preencha o campo de empresas parceiras!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            library.partner_companies.clear()
+            for company in partner_companies:
+                library.partner_companies.add(int(company))
+            library.save()
+            return Response({'message': 'Biblioteca atualizada com sucesso'}, status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Biblioteca não encontrada!'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao atualizar biblioteca!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['GET'], permission_classes=[AllowAny])
     def list_librarys(self, request):
