@@ -25,13 +25,20 @@ class BooksPurchasesViewSet(ModelViewSet):
         data = request.data
         try:
             now = datetime.now()
-            books = BooksPurchases.objects.create(
+            book_ids = [int(book_id) for book_id in data['books_id'].split(',')]
+
+            if Books.objects.filter(id__in=book_ids, in_stock=False).exists():
+                return Response({'message': 'Alguns livros não estão em estoque. A compra não pode ser concluída.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            books_purchase = BooksPurchases.objects.create(
                 user_id=user.id,
                 date=now
             )
-            book = data['books_id'].split(',')
-            for purchase in book:
-                books.books.add(int(purchase))
+
+            for purchase in book_ids:
+                books_purchase.books.add(purchase)
+
             return Response({'message': 'Compra feita com sucesso'}, status=status.HTTP_200_OK)
         except Exception as error:
             sentry_sdk.capture_exception(error)
