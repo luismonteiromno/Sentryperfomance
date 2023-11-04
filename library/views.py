@@ -120,7 +120,7 @@ class LibraryViewSet(ModelViewSet):
                 return Response({'message': 'O tempo minimo de entrega não pode ser menor/igual ao tempo máximo!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             libraries = Librarys.objects.filter(
-                delivery=True, minimum_delivery=minimum_delivery, maximum_delivery=maximum_delivery
+                delivery=True, minimum_delivery__gte=minimum_delivery, maximum_delivery__lte=maximum_delivery
             )
             serializer = LibrarysSerializers(libraries, many=True)
             return Response({'message': 'Bibliotecas encontradas', 'libraries': serializer.data}, status=status.HTTP_200_OK)
