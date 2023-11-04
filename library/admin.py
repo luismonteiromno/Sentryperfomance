@@ -13,6 +13,10 @@ class FormLibrary(forms.ModelForm):
         if delivery == True and minimum_delivery == None and maximum_delivery == None:
             raise forms.ValidationError('Preencha os campos de "tempo minímo de entrega" e "tempo máximo de entrega"!')
 
+        if delivery == False and minimum_delivery != None and maximum_delivery != None:
+            raise forms.ValidationError('Preencha o campo de "faz entrega" para que os campos '
+                                        'de "tempo minímo de entrega" e "tempo máximo de entrega" sejam válidos!')
+
         if minimum_delivery != None and maximum_delivery != None and minimum_delivery >= maximum_delivery:
             raise forms.ValidationError('O tempo minimo de entrega não pode ser menor/igual ao tempo máximo!')
 
