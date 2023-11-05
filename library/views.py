@@ -28,8 +28,12 @@ class LibraryViewSet(ModelViewSet):
         try:
             with sentry_sdk.start_transaction(op="Endpoint", name=f"Criar livro") as transaction:
                 companies = data['partner_companies'].split(',')
+                books_sale = data['books_for_sale'].split(',')
                 if not companies or all(company.strip() == '' for company in companies):
                     return Response({'message': 'Preencha o campo de empresas parceiras!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                if not books_sale or all(book_sale.strip() == '' for book_sale in books_sale):
+                    return Response({'message': 'Preencha o campo de livros à venda!'},
                                     status=status.HTTP_400_BAD_REQUEST)
 
                 library = Librarys.objects.create(
@@ -46,6 +50,10 @@ class LibraryViewSet(ModelViewSet):
 
                 for company in companies:
                     library.partner_companies.add(int(company))
+
+                for book in books_sale:
+                    library.books_for_sale.add(int(book))
+
             transaction.finish()
             return Response({'message': 'Biblioteca registrada com sucesso'}, status=status.HTTP_200_OK)
         except Exception as error:
@@ -69,13 +77,26 @@ class LibraryViewSet(ModelViewSet):
             library.minimum_delivery = data['minimum_delivery']
             library.maximum_delivery = data['maximum_delivery']
             partner_companies = data['partner_companies'].split(',')
-            if not partner_companies:
-                return Response({'message': 'Preencha o campo de empresas parceiras!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            books_for_sale = data['books_for_sale'].split(',')
 
-            library.partner_companies.clear()
-            for company in partner_companies:
-                library.partner_companies.add(int(company))
+            if library.partner_companies != partner_companies:
+                if not partner_companies:
+                    return Response({'message': 'Preencha o campo de empresas parceiras!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+                library.partner_companies.clear()
+                for company in partner_companies:
+                    library.partner_companies.add(int(company))
+
+            if library.books_for_sale != books_for_sale:
+                if not books_for_sale:
+                    return Response({'message': 'Preencha o campo de livros à venda!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+                library.books_for_sale.clear()
+                for book in books_for_sale:
+                    library.books_for_sale.add(int(book))
+
             library.save()
             return Response({'message': 'Biblioteca atualizada com sucesso'}, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
