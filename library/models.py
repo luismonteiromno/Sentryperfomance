@@ -12,7 +12,7 @@ class Librarys(models.Model):
     number = models.CharField('Número', max_length=50)
     cep = models.CharField('Cep', max_length=12)
     partner_companies = models.ManyToManyField(Companys, verbose_name='Companhias parceiras', related_name='library_partner_companies')
-    books_for_sale = models.ManyToManyField(Books, verbose_name='Livros à venda', related_name='library_books_for_sale')
+    books_for_sale = models.ManyToManyField(Books, verbose_name='Livros à venda', related_name='library_books_for_sale', limit_choices_to={'in_stock': True})
     delivery = models.BooleanField('Faz entrega?', default=True)
     minimum_delivery = models.IntegerField('Tempo minímo de entrega', default=0, blank=True, null=True)
     maximum_delivery = models.IntegerField('Tempo máximo de entrega', default=0, blank=True, null=True)
