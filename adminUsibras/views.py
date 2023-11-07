@@ -205,14 +205,14 @@ class BooksViewSet(ModelViewSet):
                 books = Books.objects.get(pk=data['book_id'])
                 books.delete()
             transaction.finish()
-            return Response({'message': 'Cartão deletado com sucesso!'},
+            return Response({'message': 'Livro deletado com sucesso!'},
                             status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
-            return Response({'message': 'Cartão não encontrado.'},
+            return Response({'message': 'Livro não encontrado.'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as error:
             print(error)
-            return Response({'message': 'Nao Foi Possivel Deletar o Cartão, Entre em Contato com o Suporte.'},
+            return Response({'message': 'Nao Foi Possivel Deletar o Livro, Entre em Contato com o Suporte.'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
