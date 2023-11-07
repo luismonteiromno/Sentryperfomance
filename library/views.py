@@ -153,10 +153,14 @@ class LibraryViewSet(ModelViewSet):
 
     @action(detail=False, methods=['DELETE'], permission_classes=[IsAuthenticated])
     def delete_librarys(self, request):
+        user = request.user
         data = request.data
         try:
-            librarys = Librarys.objects.get(pk=data['library_id'])
-            librarys.delete()
+            library = Librarys.objects.get(pk=data['library_id'])
+            if user.id != library.owner_library:
+                return Response({'message': 'Somente o dono da biblioteca pode exclui-lá!'}, status=status.HTTP_401_UNAUTHORIZED)
+
+            library.delete()
             return Response({'message': 'Biblioteca deletada com sucesso'}, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
             return Response({'message': 'Biblioteca não encontrada'}, status=status.HTTP_404_NOT_FOUND)
