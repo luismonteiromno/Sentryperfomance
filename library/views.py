@@ -144,7 +144,7 @@ class LibraryViewSet(ModelViewSet):
         try:
             librarys = Librarys.objects.get(id=params['library_id'])
             serializer = LibrarysSerializers(librarys)
-            return Response({'message': 'Biblioteca encontrada', 'librarys': serializer.data},status=status.HTTP_200_OK)
+            return Response({'message': 'Biblioteca encontrada', 'librarys': serializer.data}, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
             return Response({'message': 'Biblioteca não encontrada'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as error:
