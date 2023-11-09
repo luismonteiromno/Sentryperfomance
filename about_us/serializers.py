@@ -1,4 +1,4 @@
-from .models import AboutUs, TermsOfUse
+from .models import AboutUs, TermsOfUse, PrivacyPolice
 from rest_framework.serializers import ModelSerializer
 
 
@@ -11,4 +11,10 @@ class AboutUsSerializer(ModelSerializer):
 class TermsOfUseSerializer(ModelSerializer):
     class Meta:
         model = TermsOfUse
+        fields = '__all__'
+
+
+class PrivacyPoliceSerializers(ModelSerializer):
+    class Meta:
+        model = PrivacyPolice
         fields = '__all__'
