@@ -1,11 +1,8 @@
 from django.contrib import admin
 
-from .models import TermsOfUse, AboutUs
-
-
-class TermsOfUseAdmin(admin.ModelAdmin):
-    list_display = ['id', 'terms_of_use', 'privacy_police']
+from .models import TermsOfUse, AboutUs, PrivacyPolice
 
 
 admin.site.register(AboutUs)
-admin.site.register(TermsOfUse, TermsOfUseAdmin)
+admin.site.register(TermsOfUse)
+admin.site.register(PrivacyPolice)
