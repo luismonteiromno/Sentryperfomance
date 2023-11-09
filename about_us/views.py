@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 
-from .models import AboutUs, TermsOfUse
-from .serializers import AboutUsSerializer, TermsOfUseSerializer
+from .models import AboutUs, TermsOfUse, PrivacyPolice
+from .serializers import AboutUsSerializer, TermsOfUseSerializer, PrivacyPoliceSerializers
 
 
 class AboutUsViewSet(ModelViewSet):
@@ -31,7 +31,7 @@ class AboutUsViewSet(ModelViewSet):
 class TermsOfUseViewSet(ModelViewSet):
     queryset = TermsOfUse.objects.all()
     serializer_class = TermsOfUseSerializer
-    permission_classes = AllowAny
+    permission_classes = [AllowAny]
 
     @action(detail=False, methods=['GET'], permission_classes=[AllowAny])
     def terms_of_use(self, request):
@@ -45,3 +45,22 @@ class TermsOfUseViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao listar Termos de Uso!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class PrivacyPoliceViewSet(ModelViewSet):
+    queryset = PrivacyPolice.objects.all()
+    serializer_class = PrivacyPoliceSerializers
+    permission_classes = [AllowAny]
+
+    @action(detail=False, methods=['GET'], permission_classes=[AllowAny])
+    def privacy_police(self, request):
+        try:
+            privacy_police = PrivacyPolice.objects.last()
+            if privacy_police != None:
+                serializer = PrivacyPoliceSerializers(privacy_police)
+                return Response({'message': 'Políticas de Privacidade', 'privacy_police': serializer.data}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'Informação não encontrada!'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao exibir políticas de privacidade'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
