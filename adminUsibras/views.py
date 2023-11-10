@@ -229,3 +229,16 @@ class BooksViewSet(ModelViewSet):
             print(error)
             return Response({'message': 'Nẫo Foi Possivel encontrar o livro'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def book_by_id(self, request):
+        params = request.query_params
+        try:
+            book = Books.objects.get(pk=params['book_id'])
+            serializer = BooksSerializer(book)
+            return Response({'message': 'Livro encontrado com sucesso', 'book': serializer.data}, status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Livro não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao buscar livro!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
