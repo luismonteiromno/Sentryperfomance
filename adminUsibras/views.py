@@ -185,7 +185,7 @@ class BooksViewSet(ModelViewSet):
             print(error)
             return Response({'message': 'Erro ao atualizar livro!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @action(detail=False, methoEl menos bostero:ds=['GET'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
     def list_books(self, request):
         try:
             with sentry_sdk.start_transaction(op="Endpoint", name=f"Listar livros") as transaction:
