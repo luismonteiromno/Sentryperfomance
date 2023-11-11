@@ -20,6 +20,12 @@ class Companys(models.Model):
     owner = models.ManyToManyField(Users, verbose_name='Dono(s)')
     name = models.CharField('Nome da empresa', max_length=150, default='')
     cnpj = models.CharField('CNPJ', max_length=14)
+    cep = models.CharField('CEP', max_length=14)
+    street = models.CharField('Rua')
+    state = models.CharField('Estado')
+    complement = models.CharField('Complemento', blank=True, null=True)
+    reference_point = models.CharField('Ponto de referência')
+    number = models.CharField('Número')
 
     def __str__(self):
         return self.name

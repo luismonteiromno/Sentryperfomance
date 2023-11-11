@@ -74,7 +74,6 @@ class CompanysViewSet(ModelViewSet):
         user = request.user
         try:
             with sentry_sdk.start_transaction(op="Endpoint", name=f"Listar companhias do usuario"):
-                # with sentry_sdk.start_span(description=f"Endpoint de listar companhias do usuario"):
                 with sentry_sdk.push_scope() as scope:
                     companys = Companys.objects.filter(owner=user)
                     serializer = CompanysSerializer(companys, many=True)
@@ -135,16 +134,18 @@ class BooksViewSet(ModelViewSet):
 
                 date_object = datetime.strptime(date_str, '%d/%m/%Y').date()
 
-                Books.objects.create(
+                publishing_company = Companys.objects.get(id=data['publishing_company'])
+
+                books = Books.objects.create(
                     title=data['title'],
-                    author_id=user.id,
                     price=data['price'],
                     release_year=data['release_year'],
                     state=data['state'],
                     pages=data['pages'],
-                    publishing_company=data['publishing_company'],
+                    publishing_company=publishing_company,
                     create_at=date_object,
                 )
+                books.author.add(user.id)
             transaction.finish()
             return Response({'message': 'Livro registrado com sucesso'}, status=status.HTTP_200_OK)
         except Exception as error:
@@ -189,7 +190,7 @@ class BooksViewSet(ModelViewSet):
     def list_books(self, request):
         try:
             with sentry_sdk.start_transaction(op="Endpoint", name=f"Listar livros") as transaction:
-                books = Books.objects.all().order_by('price')
+                books = Books.objects.filter(in_stock=True).order_by('price')
                 serializer = BooksSerializer(books, many=True)
             transaction.finish()
             return Response({'message': 'Livros encontrados', 'books': serializer.data}, status=status.HTTP_200_OK)
@@ -220,7 +221,7 @@ class BooksViewSet(ModelViewSet):
         data = request.query_params
         try:
             with sentry_sdk.start_transaction(op="Endpoint", name=f"Buscar livro") as transaction:
-                books = Books.objects.filter(title__iexact=data['title'])
+                books = Books.objects.filter(title__iexact=data['title'], in_stock=True)
                 serializer = BooksSerializer(books, many=True)
             transaction.finish()
             return Response({'message': 'Livro encontrado', 'book': serializer.data},
@@ -242,3 +243,15 @@ class BooksViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao buscar livro!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def books_by_user(self, request):
+        user = request.user
+        try:
+            book = Books.objects.filter(author=user)
+            serializer = BooksSerializer(book, many=True)
+            return Response({'message': 'Livro(s) encontrado(s) com sucesso', 'book': serializer.data},
+                            status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao buscar livro(s)!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
