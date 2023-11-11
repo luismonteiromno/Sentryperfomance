@@ -74,7 +74,6 @@ class CompanysViewSet(ModelViewSet):
         user = request.user
         try:
             with sentry_sdk.start_transaction(op="Endpoint", name=f"Listar companhias do usuario"):
-                # with sentry_sdk.start_span(description=f"Endpoint de listar companhias do usuario"):
                 with sentry_sdk.push_scope() as scope:
                     companys = Companys.objects.filter(owner=user)
                     serializer = CompanysSerializer(companys, many=True)
@@ -191,7 +190,7 @@ class BooksViewSet(ModelViewSet):
     def list_books(self, request):
         try:
             with sentry_sdk.start_transaction(op="Endpoint", name=f"Listar livros") as transaction:
-                books = Books.objects.all().order_by('price')
+                books = Books.objects.filter(in_stock=True).order_by('price')
                 serializer = BooksSerializer(books, many=True)
             transaction.finish()
             return Response({'message': 'Livros encontrados', 'books': serializer.data}, status=status.HTTP_200_OK)
@@ -222,7 +221,7 @@ class BooksViewSet(ModelViewSet):
         data = request.query_params
         try:
             with sentry_sdk.start_transaction(op="Endpoint", name=f"Buscar livro") as transaction:
-                books = Books.objects.filter(title__iexact=data['title'])
+                books = Books.objects.filter(title__iexact=data['title'], in_stock=True)
                 serializer = BooksSerializer(books, many=True)
             transaction.finish()
             return Response({'message': 'Livro encontrado', 'book': serializer.data},
