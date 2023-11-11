@@ -135,16 +135,18 @@ class BooksViewSet(ModelViewSet):
 
                 date_object = datetime.strptime(date_str, '%d/%m/%Y').date()
 
-                Books.objects.create(
+                publishing_company = Companys.objects.get(id=data['publishing_company'])
+
+                books = Books.objects.create(
                     title=data['title'],
-                    author_id=user.id,
                     price=data['price'],
                     release_year=data['release_year'],
                     state=data['state'],
                     pages=data['pages'],
-                    publishing_company=data['publishing_company'],
+                    publishing_company=publishing_company,
                     create_at=date_object,
                 )
+                books.author.add(user.id)
             transaction.finish()
             return Response({'message': 'Livro registrado com sucesso'}, status=status.HTTP_200_OK)
         except Exception as error:
@@ -242,3 +244,15 @@ class BooksViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao buscar livro!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def books_by_user(self, request):
+        user = request.user
+        try:
+            book = Books.objects.filter(author=user)
+            serializer = BooksSerializer(book, many=True)
+            return Response({'message': 'Livro(s) encontrado(s) com sucesso', 'book': serializer.data},
+                            status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao buscar livro(s)!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
