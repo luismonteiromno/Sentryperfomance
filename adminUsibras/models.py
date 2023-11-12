@@ -19,6 +19,8 @@ BOOK_GENRE = (
 class Companys(models.Model):
     owner = models.ManyToManyField(Users, verbose_name='Dono(s)')
     name = models.CharField('Nome da empresa', max_length=150, default='')
+    phone = models.CharField('Telefone')
+    email = models.EmailField('Email', unique=True)
     cnpj = models.CharField('CNPJ', max_length=14)
     cep = models.CharField('CEP', max_length=14)
     street = models.CharField('Rua')
