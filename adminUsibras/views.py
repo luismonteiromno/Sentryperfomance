@@ -40,7 +40,15 @@ class CompanysViewSet(ModelViewSet):
                             # scope.set_tag('user', request.user.id)
                             companys = Companys.objects.create(
                                 name=data['name'],
-                                cnpj=data['cnpj']
+                                cnpj=data['cnpj'],
+                                phone=data['phone'],
+                                email=data['email'],
+                                cep=data['cep'],
+                                street=data['street'],
+                                state=data['state'],
+                                complement=data.get('complement'),
+                                reference_point=data['reference_point'],
+                                number=data['number']
                             )
                             companys.owner.add(user)
                             scope.set_extra("Nova companhia criada", companys)
