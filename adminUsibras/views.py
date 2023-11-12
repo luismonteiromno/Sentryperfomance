@@ -61,6 +61,32 @@ class CompanysViewSet(ModelViewSet):
             sentry_sdk.capture_exception(error)
             return Response({'message': 'Error ao registrar empresa'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @action(detail=False, methods=['PATCH'], permission_classes=[IsAuthenticated])
+    def update_company(self, request):
+        user = request.user
+        data = request.data
+        try:
+            company = Companys.objects.get(id=data['company_id'])
+            if user not in company.owner.all():
+                return Response({'message': 'Somente o(s) dono(s) podem atualizar está empresa!'}, status=status.HTTP_401_UNAUTHORIZED)
+            company.name = data['name']
+            company.cnpj = data['cnpj']
+            company.phone = data['phone']
+            company.email = data['email']
+            company.cep = data['cep']
+            company.street = data['street']
+            company.state = data['state']
+            company.complement = data.get('complement')
+            company.reference_point = data['reference_point']
+            company.number = data['number']
+            company.save()
+            return Response({'message': 'Empresa atualizada com sucesso'}, status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Empresa não encontrada!'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     @action(detail=False, methods=['GET'], permission_classes=[AllowAny])
     def list_companys(self, request):
         try:
