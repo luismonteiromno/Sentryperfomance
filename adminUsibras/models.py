@@ -21,7 +21,7 @@ class Companys(models.Model):
     name = models.CharField('Nome da empresa', max_length=150, default='')
     phone = models.CharField('Telefone')
     email = models.EmailField('Email', unique=True)
-    cnpj = models.CharField('CNPJ', max_length=14)
+    cnpj = models.CharField('CNPJ', max_length=14, unique=True)
     cep = models.CharField('CEP', max_length=14)
     street = models.CharField('Rua')
     state = models.CharField('Estado')

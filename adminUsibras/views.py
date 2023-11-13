@@ -38,6 +38,12 @@ class CompanysViewSet(ModelViewSet):
 
                             # set_tag q contem informações do erro, navegador, id do usuário e etc
                             # scope.set_tag('user', request.user.id)
+                            if Companys.objects.filter(email__iexact=data['email']).exists():
+                                return Response({'message': 'Uma empresa já utiliza este email!'}, status=status.HTTP_409_CONFLICT)
+
+                            if Companys.objects.filter(cnpj__iexact=data['cnpj']).exists():
+                                return Response({'message': 'Este CNPJ já existe!'}, status=status.HTTP_409_CONFLICT)
+
                             companys = Companys.objects.create(
                                 name=data['name'],
                                 cnpj=data['cnpj'],
@@ -69,6 +75,15 @@ class CompanysViewSet(ModelViewSet):
             company = Companys.objects.get(id=data['company_id'])
             if user not in company.owner.all():
                 return Response({'message': 'Somente o(s) dono(s) podem atualizar está empresa!'}, status=status.HTTP_401_UNAUTHORIZED)
+
+            if data['email'] != company.email:
+                if Companys.objects.filter(email__iexact=data['email']).exists():
+                    return Response({'message': 'Uma empresa já utiliza este email!'}, status=status.HTTP_409_CONFLICT)
+
+            if data['cnpj'] != company.cnpj:
+                if Companys.objects.filter(cnpj__iexact=data['cnpj']).exists():
+                    return Response({'message': 'Este CNPJ já existe!'}, status=status.HTTP_409_CONFLICT)
+
             company.name = data['name']
             company.cnpj = data['cnpj']
             company.phone = data['phone']
