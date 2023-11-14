@@ -36,7 +36,7 @@ class BooksAdmin(admin.ModelAdmin):
 
 
 class CompanysAdmin(admin.ModelAdmin):
-    search_fields = ['name']
+    search_fields = ['name', 'owner__username']
     list_display = ['id', 'name']
     filter_horizontal = ['owner']
 
