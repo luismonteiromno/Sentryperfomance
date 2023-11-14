@@ -155,7 +155,7 @@ class CompanysViewSet(ModelViewSet):
     def companies_by_state(self, request):
         params = request.query_params
         try:
-            companies = Companys.objects.filter(state__iexact=params['state'])
+            companies = Companys.objects.filter(state__icontains=params['state'])
             serializer = CompanysSerializer(companies, many=True)
             return Response({'message': 'Compania(s) encontrada(s)', 'companies': serializer.data}, status=status.HTTP_200_OK)
         except Exception as error:
