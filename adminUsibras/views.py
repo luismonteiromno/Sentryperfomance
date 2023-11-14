@@ -151,6 +151,17 @@ class CompanysViewSet(ModelViewSet):
             sentry_sdk.capture_exception(error)
             return Response({'message': 'Erro ao listar empresas'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def companies_by_state(self, request):
+        params = request.query_params
+        try:
+            companies = Companys.objects.filter(state__iexact=params['state'])
+            serializer = CompanysSerializer(companies, many=True)
+            return Response({'message': 'Compania(s) encontrada(s)', 'companies': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao listar companhia(s) por estado'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     @action(detail=False, methods=['DELETE'], permission_classes=[IsAuthenticated])
     def delete_company(self, request):
         data = request.data
