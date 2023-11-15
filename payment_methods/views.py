@@ -43,7 +43,7 @@ class PaymentMethodsViewSet(ModelViewSet):
 
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
     def payment_method_by_id(self, request):
-        params = request.params
+        params = request.query_params
         try:
             payment_method = PaymentMethods.objects.get(id=params['payment_method_id'])
             serializer = PaymentMethodsSerializers(payment_method)
@@ -52,7 +52,7 @@ class PaymentMethodsViewSet(ModelViewSet):
             print(error)
             return Response({'message': 'Erro ao listar método de pagamento!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['DELETE'], permission_classes=[IsAuthenticated])
     def delete_payment_method(self, request):
         data = request.data
         try:
