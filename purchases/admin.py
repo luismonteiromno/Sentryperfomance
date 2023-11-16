@@ -6,7 +6,7 @@ from .models import BooksPurchases
 class BooksPurchaseAdmin(admin.ModelAdmin):
     filter_horizontal = ['books']
     list_display = ['id', 'user']
-    fields = ['user', 'books', 'date']
+    fields = ['user', 'books', 'type_payment', 'date']
     readonly_fields = ['date']
 
 
