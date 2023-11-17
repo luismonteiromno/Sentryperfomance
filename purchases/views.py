@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 import sentry_sdk
 
 from adminUsibras.models import Books
+from payment_methods.models import PaymentMethods
 from .models import BooksPurchases
 from .serializers import BooksPurchasesSerializers
 
@@ -31,8 +32,11 @@ class BooksPurchasesViewSet(ModelViewSet):
                 return Response({'message': 'Alguns livros não estão em estoque. A compra não pode ser concluída.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
+            type_payment = PaymentMethods.objects.get(id=data['type_payment'])
+
             books_purchase = BooksPurchases.objects.create(
                 user_id=user.id,
+                type_payment=type_payment,
                 date=now
             )
 
@@ -61,7 +65,19 @@ class BooksPurchasesViewSet(ModelViewSet):
         try:
             books = BooksPurchases.objects.all().order_by('date')
             serializer = BooksPurchasesSerializers(books, many=True)
-            return Response({'message': 'Sucesso', 'books': serializer.data}, status=status.HTTP_200_OK)
+            return Response({'message': 'Sucesso', 'purchases': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            sentry_sdk.capture_exception(error)
+            return Response({'message': 'Erro ao listar todos o livros comprados pelo usuário'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def list_purchases_by_type_payment(self, request):
+        params = request.query_params
+        try:
+            books = BooksPurchases.objects.filter(type_payment_id=params['type_payment'])
+            serializer = BooksPurchasesSerializers(books, many=True)
+            return Response({'message': 'Sucesso', 'purchases': serializer.data}, status=status.HTTP_200_OK)
         except Exception as error:
             sentry_sdk.capture_exception(error)
             return Response({'message': 'Erro ao listar todos o livros comprados pelo usuário'},
