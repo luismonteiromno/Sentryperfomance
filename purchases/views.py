@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 import sentry_sdk
 
 from adminUsibras.models import Books
+from payment_methods.models import PaymentMethods
 from .models import BooksPurchases
 from .serializers import BooksPurchasesSerializers
 
@@ -31,8 +32,11 @@ class BooksPurchasesViewSet(ModelViewSet):
                 return Response({'message': 'Alguns livros não estão em estoque. A compra não pode ser concluída.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
+            type_payment = PaymentMethods.objects.get(id=data['type_payment'])
+
             books_purchase = BooksPurchases.objects.create(
                 user_id=user.id,
+                type_payment=type_payment,
                 date=now
             )
 
