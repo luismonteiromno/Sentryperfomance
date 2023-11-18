@@ -36,6 +36,15 @@ class LibraryViewSet(ModelViewSet):
                     return Response({'message': 'Preencha o campo de livros à venda!'},
                                     status=status.HTTP_400_BAD_REQUEST)
 
+                if data['delivery'] == True and data.get('minimum_delivery') == None and data.get('maximum_delivery') == None:
+                    return Response({'message': 'Preencha os campos de tempo de entrega!'}, status=status.HTTP_400_BAD_REQUEST)
+
+                if data['delivery'] == False and data.get('minimum_delivery') != None and data.get('maximum_delivery') != None:
+                    return Response({'message': 'Preencha o campo de entrega!'}, status=status.HTTP_400_BAD_REQUEST)
+
+                if data.get('minimum_delivery') != None and data.get('maximum_delivery') != None and data.get('minimum_delivery') >= data.get('maximum_delivery'):
+                    return Response({'message': 'O tempo minimo de entrega não pode ser menor/igual ao tempo máximo!'}, status=status.HTTP_400_BAD_REQUEST)
+
                 library = Librarys.objects.create(
                     owner_library_id=user.id,
                     name=data['name'],
