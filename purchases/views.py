@@ -31,8 +31,10 @@ class BooksPurchasesViewSet(ModelViewSet):
             if Books.objects.filter(id__in=book_ids, in_stock=False).exists():
                 return Response({'message': 'Alguns livros não estão em estoque. A compra não pode ser concluída.'},
                                 status=status.HTTP_400_BAD_REQUEST)
-
-            type_payment = PaymentMethods.objects.get(id=data['type_payment'])
+            try:
+                type_payment = PaymentMethods.objects.get(id=data['type_payment'])
+            except:
+                return Response({'message': 'Tipo de pagamento não encontrado!'}, status=status.HTTP_400_BAD_REQUEST)
 
             books_purchase = BooksPurchases.objects.create(
                 user_id=user.id,
