@@ -31,10 +31,8 @@ class BooksPurchasesViewSet(ModelViewSet):
             if Books.objects.filter(id__in=book_ids, in_stock=False).exists():
                 return Response({'message': 'Alguns livros não estão em estoque. A compra não pode ser concluída.'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            try:
-                type_payment = PaymentMethods.objects.get(id=data['type_payment'])
-            except:
-                return Response({'message': 'Tipo de pagamento não encontrado!'}, status=status.HTTP_400_BAD_REQUEST)
+
+            type_payment = PaymentMethods.objects.get(id=data['type_payment'])
 
             books_purchase = BooksPurchases.objects.create(
                 user_id=user.id,
@@ -46,6 +44,8 @@ class BooksPurchasesViewSet(ModelViewSet):
                 books_purchase.books.add(purchase)
 
             return Response({'message': 'Compra feita com sucesso'}, status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Tipo de pagamento não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as error:
             sentry_sdk.capture_exception(error)
             return Response({'message': 'Erro efetuar compra'},

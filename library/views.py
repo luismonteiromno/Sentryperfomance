@@ -194,3 +194,14 @@ class LibraryViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao listar tempo de entrega'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def search_library_by_name(self, request):
+        params = request.query_params
+        try:
+            library = Librarys.objects.filter(name__icontains=params['library_name'])
+            serializer = LibrarysSerializers(library, many=True)
+            return Response({'message': 'Biblioteca(s) encontrada(s)', 'librarys': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Biblioteca não encontrada!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
