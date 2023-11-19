@@ -48,6 +48,8 @@ class PaymentMethodsViewSet(ModelViewSet):
             payment_method = PaymentMethods.objects.get(id=params['payment_method_id'])
             serializer = PaymentMethodsSerializers(payment_method)
             return Response({'message': 'Método encontrado com sucesso', 'payment_method': serializer.data}, status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Método de pagamento não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao listar método de pagamento!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
