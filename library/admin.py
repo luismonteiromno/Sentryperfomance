@@ -30,6 +30,7 @@ class LibraryAdmin(admin.ModelAdmin):
     form = FormLibrary
     filter_horizontal = ['partner_companies', 'books_for_sale']
     list_display = ['id', 'name']
+    list_filter = ['delivery']
 
 
 admin.site.register(Librarys, LibraryAdmin)
