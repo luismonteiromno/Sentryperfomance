@@ -295,7 +295,7 @@ class BooksViewSet(ModelViewSet):
     def book_by_id(self, request):
         params = request.query_params
         try:
-            book = Books.objects.get(pk=params['book_id'])
+            book = Books.objects.get(pk=params['book_id'], in_stock=True)
             serializer = BooksSerializer(book)
             return Response({'message': 'Livro encontrado com sucesso', 'book': serializer.data}, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
@@ -312,6 +312,28 @@ class BooksViewSet(ModelViewSet):
             serializer = BooksSerializer(book, many=True)
             return Response({'message': 'Livro(s) encontrado(s) com sucesso', 'book': serializer.data},
                             status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao buscar livro(s)!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def books_by_year(self, request):
+        params = request.query_params
+        try:
+            books = Books.objects.filter(release_year__gte=params['year'], in_stock=True)
+            serializer = BooksSerializer(books, many=True)
+            return Response({'message': 'Livro(s) encontrado(s) com sucesso', 'books': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao buscar livro(s)!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def books_by_gender(self, request):
+        params = request.query_params
+        try:
+            books = Books.objects.filter(book_genre__icontains=params['gender'], in_stock=True)
+            serializer = BooksSerializer(books, many=True)
+            return Response({'message': 'Livro(s) encontrado(s) com sucesso', 'books': serializer.data}, status=status.HTTP_200_OK)
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao buscar livro(s)!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
