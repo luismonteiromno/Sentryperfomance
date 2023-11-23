@@ -27,7 +27,6 @@ class CompanysViewSet(ModelViewSet):
         user = request.user
 
         try:
-
             with sentry_sdk.start_transaction(op="Endpoint de teste",
                                               name="Inicio do endpoint de criar companhias") as transaction:
                 # Define a descrição do erro
@@ -35,7 +34,6 @@ class CompanysViewSet(ModelViewSet):
                         # função q contém set_tags para personalizar a msg de erro no painel
                         with sentry_sdk.push_scope() as scope:
                             # set_tag cria um campo extra personalizado para exibir o erro
-
                             # set_tag q contem informações do erro, navegador, id do usuário e etc
                             # scope.set_tag('user', request.user.id)
                             if Companys.objects.filter(email__iexact=data['email']).exists():
