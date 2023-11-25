@@ -1,4 +1,5 @@
 from rest_framework import routers
+from users.views import UsersViewSet
 from adminUsibras.views import BooksViewSet, CompanysViewSet
 from library.views import LibraryViewSet
 from purchases.views import BooksPurchasesViewSet
@@ -7,6 +8,7 @@ from payment_methods.views import PaymentMethodsViewSet
 
 router = routers.DefaultRouter()
 
+router.register(r'users', UsersViewSet, basename="users")
 router.register(r'books', BooksViewSet, basename="Books")
 router.register(r'companys', CompanysViewSet, basename='companys')
 router.register(r'librarys', LibraryViewSet, basename='library')
