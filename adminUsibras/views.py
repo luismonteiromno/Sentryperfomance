@@ -5,8 +5,6 @@ from django.shortcuts import render
 # from .signals import create_book
 import sentry_sdk
 from sentry_sdk import add_breadcrumb, configure_scope
-from .models import Books, Companys
-from .serializers import BooksSerializer, CompanysSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import status
@@ -14,6 +12,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 from datetime import datetime
+
+from .models import Books, Companys, BookGenres
+from .serializers import BooksSerializer, CompanysSerializer, BooksGenreSerializer
 
 
 class CompanysViewSet(ModelViewSet):
@@ -268,6 +269,21 @@ class BooksViewSet(ModelViewSet):
             print(error)
             return Response({'message': 'Erro ao listar livros'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @action(detail=False, methods=['PUT'], permission_classes=[IsAuthenticated])
+    def update_book_status(self, request):
+        data = request.data
+        try:
+            book = Books.objects.get(id=data['book_id'])
+            book.in_stock = data['in_stock']
+            book.save()
+            return Response({'message': 'Status do livro atualizado com sucesso'}, status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Livro não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao atualizar status!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
     @action(detail=False, methods=['DELETE'], permission_classes=[IsAuthenticated])
     def delete_books(self, request):
         data = request.query_params
@@ -347,3 +363,32 @@ class BooksViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao buscar livro(s)!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class BooksGenreViewSet(ModelViewSet):
+    queryset = BookGenres.objects.all()
+    serializer_class = BooksGenreSerializer
+    permission_classes = AllowAny
+
+    @action(detail=False, methods=['GET'], permission_classes=[AllowAny])
+    def list_all_genres(self, request):
+        try:
+            genres = BookGenres.objects.all()
+            serializer = BooksGenreSerializer(genres, many=True)
+            return Response({'message': 'Gênero(s) encontrado(s)', 'genres': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao listar gêneros!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[AllowAny])
+    def genre_by_id(self, request):
+        params = request.query_params
+        try:
+            genre = BookGenres.objects.get(id=params['genre_id'])
+            serializer = BooksGenreSerializer(genre)
+            return Response({'message': 'Gênero(s) encontrado(s)', 'genres': serializer.data}, status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Gênero não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao listar gênero(s)!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
