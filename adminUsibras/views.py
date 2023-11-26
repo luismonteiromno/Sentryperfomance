@@ -1,8 +1,8 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 from django.contrib import messages
 from django.template.response import TemplateResponse
 from django.shortcuts import render
-# from .signals import create_book
 import sentry_sdk
 from sentry_sdk import add_breadcrumb, configure_scope
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -26,41 +26,40 @@ class CompanysViewSet(ModelViewSet):
     def create_company(self, request):
         data = request.data
         user = request.user
-
         try:
             with sentry_sdk.start_transaction(op="Endpoint de teste",
-                                              name="Inicio do endpoint de criar companhias") as transaction:
-                # Define a descrição do erro
-                    with sentry_sdk.start_span(description=f"endpoint de criar companhias"):
-                        # função q contém set_tags para personalizar a msg de erro no painel
-                        with sentry_sdk.push_scope() as scope:
-                            # set_tag cria um campo extra personalizado para exibir o erro
-                            # set_tag q contem informações do erro, navegador, id do usuário e etc
-                            # scope.set_tag('user', request.user.id)
-                            if Companys.objects.filter(email__iexact=data['email']).exists():
-                                return Response({'message': 'Uma empresa já utiliza este email!'}, status=status.HTTP_409_CONFLICT)
+                                          name="Inicio do endpoint de criar companhias") as transaction:
+            # Define a descrição do erro
+                with sentry_sdk.start_span(description=f"endpoint de criar companhias"):
+                    # função q contém set_tags para personalizar a msg de erro no painel
+                    with sentry_sdk.push_scope() as scope:
+                        # set_tag cria um campo extra personalizado para exibir o erro
+                        # set_tag q contem informações do erro, navegador, id do usuário e etc
+                        # scope.set_tag('user', request.user.id)
+                        if Companys.objects.filter(email__iexact=data['email']).exists():
+                            return Response({'message': 'Uma empresa já utiliza este email!'}, status=status.HTTP_409_CONFLICT)
 
-                            if Companys.objects.filter(cnpj__iexact=data['cnpj']).exists():
-                                return Response({'message': 'Este CNPJ já existe!'}, status=status.HTTP_409_CONFLICT)
+                        if Companys.objects.filter(cnpj__iexact=data['cnpj']).exists():
+                            return Response({'message': 'Este CNPJ já existe!'}, status=status.HTTP_409_CONFLICT)
 
-                            companys = Companys.objects.create(
-                                name=data['name'],
-                                cnpj=data['cnpj'],
-                                phone=data['phone'],
-                                email=data['email'],
-                                cep=data['cep'],
-                                street=data['street'],
-                                state=data['state'],
-                                complement=data.get('complement'),
-                                reference_point=data['reference_point'],
-                                number=data['number']
-                            )
-                            companys.owner.add(user)
-                            scope.set_extra("Nova companhia criada", companys)
-                            add_breadcrumb(category='info', message=companys)
+                        companys = Companys.objects.create(
+                            name=data['name'],
+                            cnpj=data['cnpj'],
+                            phone=data['phone'],
+                            email=data['email'],
+                            cep=data['cep'],
+                            street=data['street'],
+                            state=data['state'],
+                            complement=data.get('complement'),
+                            reference_point=data['reference_point'],
+                            number=data['number']
+                        )
+                        companys.owner.add(user)
+                        scope.set_extra("Nova companhia criada", companys)
+                        add_breadcrumb(category='info', message=companys)
 
-            transaction.finish()
-            return Response({'message': 'Nova empresa registrada'}, status=status.HTTP_200_OK)
+                transaction.finish()
+                return Response({'message': 'Nova empresa registrada'}, status=status.HTTP_200_OK)
         except Exception as error:
             print(error)
             sentry_sdk.capture_exception(error)
@@ -273,16 +272,16 @@ class BooksViewSet(ModelViewSet):
     def update_book_status(self, request):
         data = request.data
         try:
-            book = Books.objects.get(id=data['book_id'])
-            book.in_stock = data['in_stock']
-            book.save()
-            return Response({'message': 'Status do livro atualizado com sucesso'}, status=status.HTTP_200_OK)
+            with transaction.atomic():
+                book = Books.objects.get(id=data['book_id'])
+                book.in_stock = data['in_stock']
+                book.save()
+                return Response({'message': 'Status do livro atualizado com sucesso'}, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
             return Response({'message': 'Livro não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao atualizar status!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
     @action(detail=False, methods=['DELETE'], permission_classes=[IsAuthenticated])
     def delete_books(self, request):
