@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.template.response import TemplateResponse
 from django.contrib import messages
-from .models import Books, Companys
+from .models import Books, Companys, BookGenres
 from django import forms
 
 
@@ -25,7 +25,7 @@ class BooksAdmin(admin.ModelAdmin):
     search_help_text = "Exemplo tal"
     list_filter = ['state', 'book_genre', 'publishing_company__name']
     search_fields = ['author__username']
-    filter_horizontal = ['author']
+    filter_horizontal = ['author', 'book_genre']
     form = BookForm
 
     fieldsets = (
@@ -43,3 +43,4 @@ class CompanysAdmin(admin.ModelAdmin):
 
 admin.site.register(Books, BooksAdmin)
 admin.site.register(Companys, CompanysAdmin)
+admin.site.register(BookGenres)

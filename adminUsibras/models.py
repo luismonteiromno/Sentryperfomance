@@ -8,12 +8,6 @@ BOOK_STATE = (
     ('used', 'Usado')
 )
 
-BOOK_GENRE = (
-    ('mistery', 'Mistério'),
-    ('comedy', 'Comédia'),
-    ('romance', 'Romance'),
-    ('terror', 'Terror'),
-)
 
 
 class Companys(models.Model):
@@ -37,6 +31,17 @@ class Companys(models.Model):
         verbose_name_plural = "Empresas"
 
 
+class BookGenres(models.Model):
+    book_genre = models.CharField('Gênero')
+
+    def __str__(self):
+        return f"{self.book_genre}"
+
+    class Meta:
+        verbose_name = 'Gênero do Livro'
+        verbose_name_plural = 'Gênero dos Livros'
+
+
 class Books(models.Model):
     title = models.CharField('Titulo', max_length=255)
     price = models.FloatField('Preço')
@@ -44,7 +49,7 @@ class Books(models.Model):
     release_year = models.IntegerField('Ano de lançamento')
     state = models.CharField('Estado', max_length=50, choices=BOOK_STATE, default='new')
     pages = models.IntegerField('Quantidade de páginas')
-    book_genre = models.CharField('Genero do livro', choices=BOOK_GENRE, max_length=50, default='')
+    book_genre = models.ManyToManyField(BookGenres, verbose_name='Gênero do livro', related_name='books_genre')
     in_stock = models.BooleanField('Em estoque', default=True)
     publishing_company = models.ForeignKey(Companys, verbose_name='Publicado pela empresa', default='', on_delete=models.CASCADE)
     create_at = models.DateField('Data de criação', blank=True, null=True)

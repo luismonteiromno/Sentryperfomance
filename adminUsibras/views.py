@@ -203,6 +203,11 @@ class BooksViewSet(ModelViewSet):
                     publishing_company=publishing_company,
                     create_at=date_object,
                 )
+
+                books_genre = data['books_genre'].split(",")
+                for genre in books_genre:
+                    books.book_genre.add(genre)
+
                 books.author.add(user.id)
             transaction.finish()
             return Response({'message': 'Livro registrado com sucesso'}, status=status.HTTP_200_OK)
@@ -223,6 +228,7 @@ class BooksViewSet(ModelViewSet):
                 return Response({'message': 'Empresa não encontrada!'}, status=status.HTTP_404_NOT_FOUND)
 
             book = Books.objects.get(id=data['book_id'])
+            book_genre = data['book_genre'].split(",")
             date_str = data['create_at']
             date_object = datetime.strptime(date_str, '%d/%m/%Y')
             if user in book.author.all():
@@ -234,6 +240,12 @@ class BooksViewSet(ModelViewSet):
                 book.pages = data['pages']
                 book.publishing_company = company
                 book.create_at = date_object
+
+                if book.book_genre != book_genre:
+                    book.book_genre.clear()
+                    for genres in book_genre:
+                        book.book_genre.add(genres)
+
                 book.save()
                 return Response({'message': 'Livro atualizado com sucesso'}, status=status.HTTP_200_OK)
             else:
