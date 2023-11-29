@@ -6,14 +6,17 @@ from django import forms
 
 
 class BookForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(BookForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        authors = cleaned_data.get('author')
 
         request = self.Meta.formfield_callback.keywords['request']
-        user = request.user
-        # book = Books.objects.all()
-        # print(book)
-        # if not book.filter(author=user).exists():
+        user = request.user.email
+        print(user)
+        print(authors)
+        # if user in authors:
+        #     print('test')
         #     self.fields['create_at'].disabled = False
         # else:
         #     self.fields['create_at'].disabled = True
