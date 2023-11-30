@@ -1,32 +1,13 @@
 from django.contrib import admin
-from django.template.response import TemplateResponse
-from django.contrib import messages
+
 from .models import Books, Companys, BookGenres
-from django import forms
-
-
-# class BookForm(forms.ModelForm):
-#
-#     def clean(self):
-#         cleaned_data = super().clean()
-#         authors = cleaned_data.get('author')
-#
-#         request = self.Meta.formfield_callback.keywords['request']
-#         user = request.user.email
-#         print(user)
-#         print(authors)
-#         # if user in authors:
-#         #     print('test')
-#         #     self.fields['create_at'].disabled = False
-#         # else:
-#         #     self.fields['create_at'].disabled = True
 
 
 class BooksAdmin(admin.ModelAdmin):
     list_display = ['id', 'title', 'state', 'in_stock']
     list_per_page = 100
     search_help_text = "Exemplo tal"
-    list_filter = ['state', 'book_genre', 'publishing_company__name']
+    list_filter = ['state', 'book_genre', 'publishing_company__name', 'release_year']
     search_fields = ['author__username']
     filter_horizontal = ['author', 'book_genre']
 
