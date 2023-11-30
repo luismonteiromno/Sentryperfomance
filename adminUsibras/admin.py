@@ -26,7 +26,7 @@ class BooksAdmin(admin.ModelAdmin):
     list_display = ['id', 'title', 'state', 'in_stock']
     list_per_page = 100
     search_help_text = "Exemplo tal"
-    list_filter = ['state', 'book_genre', 'publishing_company__name']
+    list_filter = ['state', 'book_genre', 'publishing_company__name', 'release_year']
     search_fields = ['author__username']
     filter_horizontal = ['author', 'book_genre']
 
