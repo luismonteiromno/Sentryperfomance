@@ -13,6 +13,8 @@ class Librarys(models.Model):
     cep = models.CharField('Cep', max_length=12)
     partner_companies = models.ManyToManyField(Companys, verbose_name='Companhias parceiras', related_name='library_partner_companies')
     books_for_sale = models.ManyToManyField(Books, verbose_name='Livros à venda', related_name='library_books_for_sale', limit_choices_to={'in_stock': True})
+    opening_time = models.TimeField('Horário de abertura', default='08:00')
+    closing_time = models.TimeField('Horário de fechamento', default='21:00')
     delivery = models.BooleanField('Faz entrega?', default=True)
     minimum_delivery = models.IntegerField('Tempo minímo de entrega', default=0, blank=True, null=True)
     maximum_delivery = models.IntegerField('Tempo máximo de entrega', default=0, blank=True, null=True)
