@@ -78,3 +78,29 @@ class UsersViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao exibir perfil do usuário!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['PUT'], permission_classes=[IsAuthenticated])
+    def update_user_library_owner(self, request):
+        user = request.user
+        data = request.data
+        try:
+            user = Users.objects.get(id=user.id)
+            user.library_owner = data['library_owner']
+            user.save()
+            return Response({'message': 'Campo atualizado com sucesso'}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao atualizar campo!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['PUT'], permission_classes=[IsAuthenticated])
+    def update_user_company_owner(self, request):
+        user = request.user
+        data = request.data
+        try:
+            user = Users.objects.get(id=user.id)
+            user.company_owner = data['company_owner']
+            user.save()
+            return Response({'message': 'Campo atualizado com sucesso'}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao atualizar campo!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
