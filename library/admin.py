@@ -14,7 +14,7 @@ class FormLibrary(forms.ModelForm):
         closing_time = cleaned_data.get('closing_time')
 
         if opening_time >= closing_time:
-            raise ValidationError('O Horário de abertura não pode ser menor/igual ao horário de fechamento!')
+            raise ValidationError('O Horário de abertura não pode ser maior/igual ao horário de fechamento!')
 
         if delivery == True and minimum_delivery == None and maximum_delivery == None:
             raise ValidationError('Preencha os campos de "tempo minímo de entrega" e "tempo máximo de entrega"!')
