@@ -210,7 +210,11 @@ class LibraryViewSet(ModelViewSet):
     def libraries_by_opening_hours(self, request):
         params = request.query_params
         try:
-            libraries = Librarys.objects.filter(opening_time=params['opening_time'], closing_time=params['closing_time'])
+            if params['opening_time'] >= params['closing_time']:
+                return Response({'message': 'O Horário de abertura não pode ser maior/igual ao horário de fechamento!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            libraries = Librarys.objects.filter(opening_time__lte=params['opening_time'], closing_time__gte=params['closing_time'])
             serializer = LibrarysSerializers(libraries, many=True)
             return Response({'message': 'Bibliotecas encontradas', 'libraries': serializer.data},  status=status.HTTP_200_OK)
         except Exception as error:
@@ -221,7 +225,7 @@ class LibraryViewSet(ModelViewSet):
     def open_libraries_now(self, request):
         now = datetime.now().time()
         try:
-            libraries = Librarys.objects.filter(opening_time__lte=now, closing_time__gt=now)
+            libraries = Librarys.objects.filter(opening_time__lte=now, closing_time__gte=now)
             serializer = LibrarysSerializers(libraries, many=True)
             return Response({'message': 'Bibliotecas encontradas', 'libraries': serializer.data}, status=status.HTTP_200_OK)
         except Exception as error:
