@@ -184,7 +184,7 @@ class LibraryViewSet(ModelViewSet):
             minimum_delivery = params['minimum_delivery']
             maximum_delivery = params['maximum_delivery']
             if minimum_delivery >= maximum_delivery:
-                return Response({'message': 'O tempo minimo de entrega não pode ser menor/igual ao tempo máximo!'},
+                return Response({'message': 'O tempo minimo de entrega não pode ser maior/igual ao tempo máximo!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             libraries = Librarys.objects.filter(
                 delivery=True, minimum_delivery__gte=minimum_delivery, maximum_delivery__lte=maximum_delivery
