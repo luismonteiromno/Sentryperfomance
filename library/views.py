@@ -205,3 +205,25 @@ class LibraryViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Biblioteca não encontrada!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def libraries_by_opening_hours(self, request):
+        params = request.query_params
+        try:
+            libraries = Librarys.objects.filter(opening_time=params['opening_time'], closing_time=params['closing_time'])
+            serializer = LibrarysSerializers(libraries, many=True)
+            return Response({'message': 'Bibliotecas encontradas', 'libraries': serializer.data},  status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao listar bibliotecas!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def open_libraries_now(self, request):
+        now = datetime.now().time()
+        try:
+            libraries = Librarys.objects.filter(opening_time__lte=now, closing_time__gt=now)
+            serializer = LibrarysSerializers(libraries, many=True)
+            return Response({'message': 'Bibliotecas encontradas', 'libraries': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao listar bibliotecas!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
