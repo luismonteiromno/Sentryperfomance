@@ -35,7 +35,7 @@ class LibraryAdmin(admin.ModelAdmin):
         ('Entrega', {'fields': ('delivery', 'minimum_delivery', 'maximum_delivery')})
     )
     form = FormLibrary
-    filter_horizontal = ['partner_companies', 'books_for_sale']
+    filter_horizontal = ['owner_library', 'partner_companies', 'books_for_sale']
     list_display = ['id', 'name']
     list_filter = ['delivery']
 
