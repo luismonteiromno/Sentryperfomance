@@ -24,7 +24,7 @@ class FormLibrary(forms.ModelForm):
                                         'de "tempo minímo de entrega" e "tempo máximo de entrega" sejam válidos!')
 
         if minimum_delivery != None and maximum_delivery != None and minimum_delivery >= maximum_delivery:
-            raise ValidationError('O tempo minimo de entrega não pode ser menor/igual ao tempo máximo!')
+            raise ValidationError('O tempo minimo de entrega não pode ser maior/igual ao tempo máximo!')
 
 
 class LibraryAdmin(admin.ModelAdmin):
