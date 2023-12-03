@@ -46,7 +46,6 @@ class LibraryViewSet(ModelViewSet):
                     return Response({'message': 'O tempo minimo de entrega não pode ser menor/igual ao tempo máximo!'}, status=status.HTTP_400_BAD_REQUEST)
 
                 library = Librarys.objects.create(
-                    owner_library_id=user.id,
                     name=data['name'],
                     address=data['address'],
                     street=data['street'],
@@ -58,6 +57,7 @@ class LibraryViewSet(ModelViewSet):
                     minimum_delivery=data.get('minimum_delivery'),
                     maximum_delivery=data.get('maximum_delivery')
                 )
+                library.owner_library.add(user)
 
                 for company in companies:
                     library.partner_companies.add(int(company))
@@ -77,7 +77,7 @@ class LibraryViewSet(ModelViewSet):
         data = request.data
         try:
             library = Librarys.objects.get(id=data['library_id'])
-            if library.owner_library_id != user.id:
+            if user not in library.owner_library.all():
                 return Response({'message': 'Apenas o dono pode atualizar à biblioteca!'}, status=status.HTTP_401_UNAUTHORIZED)
             library.name = data['name']
             library.address = data['address']

@@ -24,7 +24,7 @@ class FormLibrary(forms.ModelForm):
                                         'de "tempo minímo de entrega" e "tempo máximo de entrega" sejam válidos!')
 
         if minimum_delivery != None and maximum_delivery != None and minimum_delivery >= maximum_delivery:
-            raise ValidationError('O tempo minimo de entrega não pode ser menor/igual ao tempo máximo!')
+            raise ValidationError('O tempo minimo de entrega não pode ser maior/igual ao tempo máximo!')
 
 
 class LibraryAdmin(admin.ModelAdmin):
@@ -35,7 +35,7 @@ class LibraryAdmin(admin.ModelAdmin):
         ('Entrega', {'fields': ('delivery', 'minimum_delivery', 'maximum_delivery')})
     )
     form = FormLibrary
-    filter_horizontal = ['partner_companies', 'books_for_sale']
+    filter_horizontal = ['owner_library', 'partner_companies', 'books_for_sale']
     list_display = ['id', 'name']
     list_filter = ['delivery']
 
