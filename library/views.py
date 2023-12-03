@@ -52,6 +52,8 @@ class LibraryViewSet(ModelViewSet):
                     street=data['street'],
                     number=data['number'],
                     cep=data['cep'],
+                    opening_time=data['opening_time'],
+                    closing_time=data['closing_time'],
                     delivery=data['delivery'],
                     minimum_delivery=data.get('minimum_delivery'),
                     maximum_delivery=data.get('maximum_delivery')
@@ -82,6 +84,8 @@ class LibraryViewSet(ModelViewSet):
             library.street = data['street']
             library.number = data['number']
             library.cep = data['cep']
+            library.opening_time = data['opening_time']
+            library.closing_time = data['closing_time']
             library.delivery = data['delivery']
             library.minimum_delivery = data['minimum_delivery']
             library.maximum_delivery = data['maximum_delivery']
