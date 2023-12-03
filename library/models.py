@@ -5,7 +5,7 @@ from adminUsibras.models import Books
 
 
 class Librarys(models.Model):
-    owner_library = models.ForeignKey(Users, verbose_name='Dono', related_name='owner_library', on_delete=models.CASCADE, null=True)
+    owner_library = models.ManyToManyField(Users, verbose_name='Dono', related_name='owner_library')
     name = models.CharField('Nome da livraria', max_length=100)
     address = models.CharField('Endereço', max_length=50)
     street = models.CharField('Rua', max_length=50)
