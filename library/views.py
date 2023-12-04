@@ -170,7 +170,7 @@ class LibraryViewSet(ModelViewSet):
         data = request.data
         try:
             library = Librarys.objects.get(pk=data['library_id'])
-            if user.id != library.owner_library:
+            if user not in library.owner_library.all():
                 return Response({'message': 'Somente o dono da biblioteca pode exclui-lá!'}, status=status.HTTP_401_UNAUTHORIZED)
 
             library.delete()
