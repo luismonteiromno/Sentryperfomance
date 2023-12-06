@@ -196,6 +196,8 @@ class BooksViewSet(ModelViewSet):
 
                 books = Books.objects.create(
                     title=data['title'],
+                    synopsis=data['synopsis'],
+                    book_cover=data['book_cover'],
                     price=data['price'],
                     release_year=data['release_year'],
                     state=data['state'],
@@ -233,6 +235,8 @@ class BooksViewSet(ModelViewSet):
             date_object = datetime.strptime(date_str, '%d/%m/%Y')
             if user in book.author.all():
                 book.title = data['title']
+                book.synopsis = data['synopsis']
+                book.book_cover = data['book_cover']
                 book.author.id = data.get('author_ids')
                 book.price = data['price']
                 book.release_year = data['release_year']
