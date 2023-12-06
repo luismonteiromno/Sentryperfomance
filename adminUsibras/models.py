@@ -9,7 +9,6 @@ BOOK_STATE = (
 )
 
 
-
 class Companys(models.Model):
     owner = models.ManyToManyField(Users, verbose_name='Dono(s)')
     name = models.CharField('Nome da empresa', max_length=150, default='')
@@ -44,6 +43,8 @@ class BookGenres(models.Model):
 
 class Books(models.Model):
     title = models.CharField('Titulo', max_length=255)
+    book_cover = models.ImageField('Capa do livro')
+    synopsis = models.TextField('Sinopse', default='')
     price = models.FloatField('Preço')
     author = models.ManyToManyField(Users, verbose_name='Autor', default='')
     release_year = models.IntegerField('Ano de lançamento')
