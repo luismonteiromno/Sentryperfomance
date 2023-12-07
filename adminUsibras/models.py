@@ -1,7 +1,6 @@
 from django.db import models
 from users.models import Users
 
-
 BOOK_STATE = (
     ('new', 'Novo'),
     ('semi-new', 'Semi-novo'),
@@ -53,6 +52,7 @@ class Books(models.Model):
     book_genre = models.ManyToManyField(BookGenres, verbose_name='Gênero do livro', related_name='books_genre')
     in_stock = models.BooleanField('Em estoque', default=True)
     publishing_company = models.ForeignKey(Companys, verbose_name='Publicado pela empresa', default='', on_delete=models.CASCADE)
+    available_in_libraries = models.ForeignKey('library.Librarys', verbose_name='Disponível na biblioteca', related_name='book_available_libraries', on_delete=models.CASCADE)
     create_at = models.DateField('Data de criação', blank=True, null=True)
 
     def __str__(self):
