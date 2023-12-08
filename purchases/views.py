@@ -8,11 +8,14 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 import sentry_sdk
+from django.db import transaction
 
 from adminUsibras.models import Books
 from payment_methods.models import PaymentMethods
 from .models import BooksPurchases
 from .serializers import BooksPurchasesSerializers
+
+from utils import send_email
 
 
 class BooksPurchasesViewSet(ModelViewSet):
@@ -25,29 +28,34 @@ class BooksPurchasesViewSet(ModelViewSet):
         user = request.user
         data = request.data
         try:
-            now = datetime.now()
-            book_ids = [int(book_id) for book_id in data['books_id'].split(',')]
+            with transaction.atomic():
+                now = datetime.now()
+                book_ids = [int(book_id) for book_id in data['books_id'].split(',')]
 
-            if Books.objects.filter(id__in=book_ids, in_stock=False).exists():
-                return Response({'message': 'Alguns livros não estão em estoque. A compra não pode ser concluída.'},
-                                status=status.HTTP_400_BAD_REQUEST)
+                if Books.objects.filter(id__in=book_ids, in_stock=False).exists():
+                    return Response({'message': 'Alguns livros não estão em estoque. A compra não pode ser concluída.'},
+                                    status=status.HTTP_400_BAD_REQUEST)
 
-            type_payment = PaymentMethods.objects.get(id=data['type_payment'])
+                type_payment = PaymentMethods.objects.get(id=data['type_payment'])
 
-            books_purchase = BooksPurchases.objects.create(
-                user_id=user.id,
-                type_payment=type_payment,
-                date=now
-            )
+                books_purchase = BooksPurchases.objects.create(
+                    user_id=user.id,
+                    type_payment=type_payment,
+                    date=now
+                )
 
-            for purchase in book_ids:
-                books_purchase.books.add(purchase)
+                for purchase in book_ids:
+                    books_purchase.books.add(purchase)
 
-            return Response({'message': 'Compra feita com sucesso'}, status=status.HTTP_200_OK)
+                for owner_email in books_purchase.books.all():
+                    for email in owner_email.available_in_libraries.owner_library.all():
+                        send_email(email.email, 'Nova compra feita!', f'Compra feita na biblioteca {owner_email.available_in_libraries}')
+
+                return Response({'message': 'Compra feita com sucesso'}, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
             return Response({'message': 'Tipo de pagamento não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as error:
-            sentry_sdk.capture_exception(error)
+            print(error)
             return Response({'message': 'Erro efetuar compra'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
