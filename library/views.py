@@ -45,6 +45,11 @@ class LibraryViewSet(ModelViewSet):
                 if data.get('minimum_delivery') != None and data.get('maximum_delivery') != None and data.get('minimum_delivery') >= data.get('maximum_delivery'):
                     return Response({'message': 'O tempo minimo de entrega não pode ser menor/igual ao tempo máximo!'}, status=status.HTTP_400_BAD_REQUEST)
 
+                if data['opening_time'] >= data['closing_time']:
+                    return Response({
+                        'message': 'O Horário de abertura não pode ser maior/igual ao horário de fechamento!'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
                 library = Librarys.objects.create(
                     name=data['name'],
                     address=data['address'],
@@ -86,6 +91,9 @@ class LibraryViewSet(ModelViewSet):
             library.cep = data['cep']
             library.opening_time = data['opening_time']
             library.closing_time = data['closing_time']
+            if data['opening_time'] >= data['closing_time']:
+                return Response({'message': 'O Horário de abertura não pode ser maior/igual ao horário de fechamento!'
+                }, status=status.HTTP_400_BAD_REQUEST)
             library.delivery = data['delivery']
             library.minimum_delivery = data['minimum_delivery']
             library.maximum_delivery = data['maximum_delivery']
