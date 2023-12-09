@@ -183,6 +183,7 @@ class LibraryViewSet(ModelViewSet):
 
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
     def filter_time_delivery(self, request):
+        now = datetime.now().time()
         params = request.query_params
         try:
             minimum_delivery = params['minimum_delivery']
@@ -191,6 +192,8 @@ class LibraryViewSet(ModelViewSet):
                 return Response({'message': 'O tempo minimo de entrega não pode ser maior/igual ao tempo máximo!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             libraries = Librarys.objects.filter(
+                opening_time__lte=now,
+                closing_time__gte=now,
                 delivery=True, minimum_delivery__gte=minimum_delivery, maximum_delivery__lte=maximum_delivery
             )
             serializer = LibrarysSerializers(libraries, many=True)
