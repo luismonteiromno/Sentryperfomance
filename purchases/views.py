@@ -65,7 +65,7 @@ class BooksPurchasesViewSet(ModelViewSet):
         try:
             books = BooksPurchases.objects.filter(user_id=user.id).order_by('date')
             serializer = BooksPurchasesSerializers(books, many=True)
-            return Response({'message': 'Sucesso', 'books': serializer.data}, status=status.HTTP_200_OK)
+            return Response({'message': 'Sucesso', 'books_purchase': serializer.data}, status=status.HTTP_200_OK)
         except Exception as error:
             sentry_sdk.capture_exception(error)
             return Response({'message': 'Erro ao listar todos o livros comprados pelo usuário'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -113,7 +113,7 @@ class BooksPurchasesViewSet(ModelViewSet):
         try:
             books = BooksPurchases.objects.filter(user_id=params['user_id']).order_by('date')
             serializer = BooksPurchasesSerializers(books, many=True)
-            return Response({'message': 'Sucesso', 'books': serializer.data}, status=status.HTTP_200_OK)
+            return Response({'message': 'Sucesso', 'books_purchase': serializer.data}, status=status.HTTP_200_OK)
         except Exception as error:
             sentry_sdk.capture_exception(error)
             return Response({'message': 'Erro ao listar todos o livros comprados pelo usuário'},
