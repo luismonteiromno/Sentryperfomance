@@ -17,7 +17,7 @@ class Librarys(models.Model):
     closing_time = models.TimeField('Horário de fechamento', default='21:00')
     delivery = models.BooleanField('Faz entrega?', default=True)
     minimum_delivery = models.IntegerField('Tempo minímo de entrega', default=0, blank=True, null=True)
-    maximum_delivery = models.IntegerField('Tempo máximo de entrega', default=0, blank=True, null=True)
+    maximum_delivery = models.IntegerField('Tempo máximo de entrega', default=60, blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} - {self.address}"
