@@ -82,6 +82,17 @@ class LibraryViewSet(ModelViewSet):
         data = request.data
         try:
             library = Librarys.objects.get(id=data['library_id'])
+            if data['delivery'] == True and data.get('minimum_delivery') == None and data.get('maximum_delivery') == None:
+                return Response({'message': 'Preencha os campos de tempo de entrega!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if data['delivery'] == False and data.get('minimum_delivery') != None and data.get('maximum_delivery') != None:
+                return Response({'message': 'Preencha o campo de entrega!'}, status=status.HTTP_400_BAD_REQUEST)
+
+            if data.get('minimum_delivery') != None and data.get('maximum_delivery') != None and data.get('minimum_delivery') >= data.get('maximum_delivery'):
+                return Response({'message': 'O tempo minimo de entrega não pode ser menor/igual ao tempo máximo!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             if user not in library.owner_library.all():
                 return Response({'message': 'Apenas o dono pode atualizar à biblioteca!'}, status=status.HTTP_401_UNAUTHORIZED)
             library.name = data['name']
@@ -92,8 +103,8 @@ class LibraryViewSet(ModelViewSet):
             library.opening_time = data['opening_time']
             library.closing_time = data['closing_time']
             if data['opening_time'] >= data['closing_time']:
-                return Response({'message': 'O Horário de abertura não pode ser maior/igual ao horário de fechamento!'
-                }, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'message': 'O Horário de abertura não pode ser maior/igual ao horário de fechamento!'},
+                                status=status.HTTP_400_BAD_REQUEST)
             library.delivery = data['delivery']
             library.minimum_delivery = data['minimum_delivery']
             library.maximum_delivery = data['maximum_delivery']
