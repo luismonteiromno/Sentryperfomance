@@ -10,6 +10,7 @@ BOOK_STATE = (
 
 class Companys(models.Model):
     owner = models.ManyToManyField(Users, verbose_name='Dono(s)')
+    logo = models.ImageField('Logo')
     name = models.CharField('Nome da empresa', max_length=150, default='')
     phone = models.CharField('Telefone')
     email = models.EmailField('Email', unique=True)

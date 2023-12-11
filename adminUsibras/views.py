@@ -44,6 +44,7 @@ class CompanysViewSet(ModelViewSet):
 
                         companys = Companys.objects.create(
                             name=data['name'],
+                            logo=data['logo'],
                             cnpj=data['cnpj'],
                             phone=data['phone'],
                             email=data['email'],
@@ -83,6 +84,7 @@ class CompanysViewSet(ModelViewSet):
                     return Response({'message': 'Este CNPJ já existe!'}, status=status.HTTP_409_CONFLICT)
 
             company.name = data['name']
+            company.logo = data['logo']
             company.cnpj = data['cnpj']
             company.phone = data['phone']
             company.email = data['email']
