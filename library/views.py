@@ -74,6 +74,9 @@ class LibraryViewSet(ModelViewSet):
                 for book in books_sale:
                     library.books_for_sale.add(int(book))
 
+                for payment in type_payments_accepted:
+                    library.type_payments_accepted.add(int(payment))
+
             transaction.finish()
             return Response({'message': 'Biblioteca registrada com sucesso'}, status=status.HTTP_200_OK)
         except Exception as error:
@@ -114,6 +117,7 @@ class LibraryViewSet(ModelViewSet):
             library.maximum_delivery = data['maximum_delivery']
             partner_companies = data['partner_companies'].split(',')
             books_for_sale = data['books_for_sale'].split(',')
+            type_payments_accepted = data['type_payments_accepted'].split(',')
 
             if library.partner_companies != partner_companies:
                 if not partner_companies:
@@ -132,6 +136,15 @@ class LibraryViewSet(ModelViewSet):
                 library.books_for_sale.clear()
                 for book in books_for_sale:
                     library.books_for_sale.add(int(book))
+
+            if library.type_payments_accepted != type_payments_accepted:
+                if not type_payments_accepted:
+                    return Response({'message': 'Preencha o campo de tipos de pagamentos aceitos!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+                library.type_payments_accepted.clear()
+                for payment in type_payments_accepted:
+                    library.type_payments_accepted.add(int(payment))
 
             library.save()
             return Response({'message': 'Biblioteca atualizada com sucesso'}, status=status.HTTP_200_OK)
