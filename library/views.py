@@ -29,11 +29,15 @@ class LibraryViewSet(ModelViewSet):
             with sentry_sdk.start_transaction(op="Endpoint", name=f"Criar livro") as transaction:
                 companies = data['partner_companies'].split(',')
                 books_sale = data['books_for_sale'].split(',')
+                type_payments_accepted = data['type_payments_accepted'].split(',')
                 if not companies or all(company.strip() == '' for company in companies):
                     return Response({'message': 'Preencha o campo de empresas parceiras!'},
                                     status=status.HTTP_400_BAD_REQUEST)
                 if not books_sale or all(book_sale.strip() == '' for book_sale in books_sale):
                     return Response({'message': 'Preencha o campo de livros à venda!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                if not type_payments_accepted or all(type_payment.strip() == '' for type_payment in type_payments_accepted):
+                    return Response({'message': 'Preencha o campo de tipos de pagamentos aceitos!'},
                                     status=status.HTTP_400_BAD_REQUEST)
 
                 if data['delivery'] == True and data.get('minimum_delivery') == None and data.get('maximum_delivery') == None:
