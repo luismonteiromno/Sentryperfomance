@@ -2,6 +2,7 @@ from django.db import models
 from adminUsibras.models import Companys
 from users.models import Users
 from adminUsibras.models import Books
+from payment_methods.models import PaymentMethods
 
 
 class Librarys(models.Model):
@@ -13,6 +14,7 @@ class Librarys(models.Model):
     cep = models.CharField('Cep', max_length=12)
     partner_companies = models.ManyToManyField(Companys, verbose_name='Companhias parceiras', related_name='library_partner_companies')
     books_for_sale = models.ManyToManyField(Books, verbose_name='Livros à venda', related_name='library_books_for_sale', limit_choices_to={'in_stock': True})
+    type_payments_accepted = models.ManyToManyField(PaymentMethods, verbose_name='Tipos de pagamentos aceitos', related_name='type_payments_accepted')
     opening_time = models.TimeField('Horário de abertura', default='08:00')
     closing_time = models.TimeField('Horário de fechamento', default='21:00')
     delivery = models.BooleanField('Faz entrega?', default=True)
