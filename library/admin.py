@@ -30,12 +30,12 @@ class FormLibrary(forms.ModelForm):
 class LibraryAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Informações da Biblioteca', {'fields': ('owner_library', 'name', 'partner_companies', 'books_for_sale',
-                                                  'opening_time', 'closing_time')}),
+                                                  'type_payments_accepted', 'opening_time', 'closing_time')}),
         ('Localização da Biblioteca', {'fields': ('address', 'street', 'number', 'cep')}),
         ('Entrega', {'fields': ('delivery', 'minimum_delivery', 'maximum_delivery')})
     )
     form = FormLibrary
-    filter_horizontal = ['owner_library', 'partner_companies', 'books_for_sale']
+    filter_horizontal = ['owner_library', 'type_payments_accepted', 'partner_companies', 'books_for_sale']
     list_display = ['id', 'name']
     list_filter = ['delivery']
 
