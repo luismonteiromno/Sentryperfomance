@@ -30,7 +30,7 @@ class BooksPurchasesViewSet(ModelViewSet):
         try:
             with transaction.atomic():
                 now = datetime.now()
-                book_ids = [int(book_id) for book_id in data['books_id'].split(',')]
+                book_ids = [book_id for book_id in data['books_id'].split(',')]
 
                 if Books.objects.filter(id__in=book_ids, in_stock=False).exists():
                     return Response({'message': 'Alguns livros não estão em estoque. A compra não pode ser concluída.'},
@@ -45,11 +45,15 @@ class BooksPurchasesViewSet(ModelViewSet):
                 )
 
                 for purchase in book_ids:
-                    books_purchase.books.add(purchase)
+                    books_purchase.books.add(int(purchase))
 
                 for owner_email in books_purchase.books.all():
-                    for email in owner_email.available_in_libraries.owner_library.all():
-                        send_email(email.email, 'Nova compra feita!', f'Compra feita na biblioteca {owner_email.available_in_libraries}')
+                    print(owner_email.available_in_libraries.type_payments_accepted.all())
+
+
+                # for owner_email in books_purchase.books.all():
+                #     for email in owner_email.available_in_libraries.owner_library.all():
+                #         send_email(email.email, 'Nova compra feita!', f'Compra feita na biblioteca {owner_email.available_in_libraries}')
 
                 return Response({'message': 'Compra feita com sucesso'}, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
