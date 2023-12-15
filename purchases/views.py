@@ -50,7 +50,7 @@ class BooksPurchasesViewSet(ModelViewSet):
                 for owner_email in books_purchase.books.all():
                     if type_payment not in owner_email.available_in_libraries.type_payments_accepted.all():
                         return Response(
-                            {'message': 'Método de pagameento não aceito pela biblioteca! '},
+                            {'message': 'Método de pagamento não aceito pela biblioteca! '},
                             status=status.HTTP_400_BAD_REQUEST)
 
                     for email in owner_email.available_in_libraries.owner_library.all():
