@@ -48,12 +48,13 @@ class BooksPurchasesViewSet(ModelViewSet):
                     books_purchase.books.add(int(purchase))
 
                 for owner_email in books_purchase.books.all():
-                    print(owner_email.available_in_libraries.type_payments_accepted.all())
+                    if type_payment not in owner_email.available_in_libraries.type_payments_accepted.all():
+                        return Response(
+                            {'message': 'Método de pagameento não aceito pela biblioteca! '},
+                            status=status.HTTP_400_BAD_REQUEST)
 
-
-                # for owner_email in books_purchase.books.all():
-                #     for email in owner_email.available_in_libraries.owner_library.all():
-                #         send_email(email.email, 'Nova compra feita!', f'Compra feita na biblioteca {owner_email.available_in_libraries}')
+                    for email in owner_email.available_in_libraries.owner_library.all():
+                        send_email(email.email, 'Nova compra feita!', f'Compra feita na biblioteca {owner_email.available_in_libraries}')
 
                 return Response({'message': 'Compra feita com sucesso'}, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
