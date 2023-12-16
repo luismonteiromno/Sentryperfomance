@@ -108,7 +108,7 @@ class BooksPurchasesViewSet(ModelViewSet):
         except ObjectDoesNotExist:
             return Response({"message": 'Compra não encontrada'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as error:
-            sentry_sdk.capture_exception(error)
+            print(error)
             return Response({'message': 'Erro ao listar todos o livros comprados pelo usuário'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
