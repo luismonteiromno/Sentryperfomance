@@ -3,7 +3,8 @@ from django.contrib.auth.models import AbstractUser
 
 TYPE_USER = (
     ('default', 'Padrão'),
-    ('owner', 'Dono')
+    ('owner', 'Dono'),
+    ('admin', 'Admin')
 )
 
 
