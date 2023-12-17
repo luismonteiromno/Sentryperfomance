@@ -104,3 +104,32 @@ class UsersViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao atualizar campo!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['PUT'], permission_classes=[IsAuthenticated])
+    def update_type_user(self, request):
+        user = request.user
+        data = request.data
+        try:
+            if user.type_user == 'admin':
+                user = Users.objects.get(get=data['id'])
+                user.type_user = data['type_user']
+                user.save()
+                return Response({'message': 'Tipo do usuário atualizado com sucesso'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'Somente usuários admin podem alterar este campo!'}, status=status.HTTP_403_FORBIDDEN)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Usuaŕio não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao atualizar usuário!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def list_users_by_type(self, request):
+        params = request.query_params
+        try:
+            users = Users.objects.filter(type_user=params['type_user'])
+            serializer = UsersSerializers(users, many=True)
+            return Response({'message': 'Usuários encontrados', 'users': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao listar usuários!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
