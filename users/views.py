@@ -111,7 +111,7 @@ class UsersViewSet(ModelViewSet):
         data = request.data
         try:
             if user.type_user == 'admin':
-                user = Users.objects.get(get=data['id'])
+                user = Users.objects.get(id=data['user_id'])
                 user.type_user = data['type_user']
                 user.save()
                 return Response({'message': 'Tipo do usuário atualizado com sucesso'}, status=status.HTTP_200_OK)
