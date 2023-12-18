@@ -36,31 +36,35 @@ class CompanysViewSet(ModelViewSet):
                         # set_tag cria um campo extra personalizado para exibir o erro
                         # set_tag q contem informações do erro, navegador, id do usuário e etc
                         # scope.set_tag('user', request.user.id)
-                        if Companys.objects.filter(email__iexact=data['email']).exists():
-                            return Response({'message': 'Uma empresa já utiliza este email!'}, status=status.HTTP_409_CONFLICT)
+                        if user.type_user == 'owner':
 
-                        if Companys.objects.filter(cnpj__iexact=data['cnpj']).exists():
-                            return Response({'message': 'Este CNPJ já existe!'}, status=status.HTTP_409_CONFLICT)
+                            if Companys.objects.filter(email__iexact=data['email']).exists():
+                                return Response({'message': 'Uma empresa já utiliza este email!'}, status=status.HTTP_409_CONFLICT)
 
-                        companys = Companys.objects.create(
-                            name=data['name'],
-                            logo=data['logo'],
-                            cnpj=data['cnpj'],
-                            phone=data['phone'],
-                            email=data['email'],
-                            cep=data['cep'],
-                            street=data['street'],
-                            state=data['state'],
-                            complement=data.get('complement'),
-                            reference_point=data['reference_point'],
-                            number=data['number']
-                        )
-                        companys.owner.add(user)
-                        scope.set_extra("Nova companhia criada", companys)
-                        add_breadcrumb(category='info', message=companys)
+                            if Companys.objects.filter(cnpj__iexact=data['cnpj']).exists():
+                                return Response({'message': 'Este CNPJ já existe!'}, status=status.HTTP_409_CONFLICT)
 
-                transaction.finish()
-                return Response({'message': 'Nova empresa registrada'}, status=status.HTTP_200_OK)
+                            companys = Companys.objects.create(
+                                name=data['name'],
+                                logo=data['logo'],
+                                cnpj=data['cnpj'],
+                                phone=data['phone'],
+                                email=data['email'],
+                                cep=data['cep'],
+                                street=data['street'],
+                                state=data['state'],
+                                complement=data.get('complement'),
+                                reference_point=data['reference_point'],
+                                number=data['number']
+                            )
+                            companys.owner.add(user)
+                            scope.set_extra("Nova companhia criada", companys)
+                            add_breadcrumb(category='info', message=companys)
+
+                            transaction.finish()
+                            return Response({'message': 'Nova empresa registrada'}, status=status.HTTP_200_OK)
+                        else:
+                            return Response({'message': 'Somente usuários do tipo Dono podem registrar empresas!'}, status=status.HTTP_403_FORBIDDEN)
         except Exception as error:
             print(error)
             sentry_sdk.capture_exception(error)
