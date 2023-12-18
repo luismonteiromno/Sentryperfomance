@@ -50,8 +50,8 @@ class UsersViewSet(ModelViewSet):
                 company_owner=data['company_owner'],
                 library_owner=data['library_owner']
             )
-            # if user.password != data['password']:
-            #     user.set_password(data['password'])
+            if user.set_password != data['password']:
+                user.set_password(data['password'])
             return Response({'message': 'Usuário atualizado com sucesso'}, status=status.HTTP_200_OK)
         except Exception as error:
             print(error)
