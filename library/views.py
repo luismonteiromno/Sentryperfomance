@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.contrib import messages
 from django.template.response import TemplateResponse
 from django.shortcuts import render
@@ -271,6 +272,22 @@ class LibraryViewSet(ModelViewSet):
             libraries = Librarys.objects.filter(opening_time__lte=now, closing_time__gte=now)
             serializer = LibrarysSerializers(libraries, many=True)
             return Response({'message': 'Bibliotecas encontradas', 'libraries': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao listar bibliotecas!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def filter_libraries(self, request):
+        params = request.query_params
+        try:
+            libraries = Librarys.objects.filter(
+                Q(opening_time__lte=params.get('opening_time'), closing_time__gte=params.get('closing_time')) |
+                Q(delivery=params.get('delivery')) |
+                Q(price=params.get('price')) |
+                Q(minimum_delivery__lte=params.get('minimum_delivery'), maximum_delivery__gte=params.get('maximum_delivery'))
+            )
+            serializer = LibrarysSerializers(libraries, many=True)
+            return Response({'message': 'Biblitecas encontradas', 'libraries': serializer.data}, status=status.HTTP_200_OK)
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao listar bibliotecas!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
