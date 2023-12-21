@@ -280,14 +280,29 @@ class LibraryViewSet(ModelViewSet):
     def filter_libraries(self, request):
         params = request.query_params
         try:
-            libraries = Librarys.objects.filter(
-                Q(opening_time__lte=params.get('opening_time'), closing_time__gte=params.get('closing_time')) |
-                Q(delivery=params.get('delivery')) |
-                Q(price=params.get('price')) |
-                Q(minimum_delivery__lte=params.get('minimum_delivery'), maximum_delivery__gte=params.get('maximum_delivery'))
-            )
+            libraries = Librarys.objects.all()
+            if 'opening_time' in params and 'closing_time' in params:
+                print('ggg')
+                library = libraries.filter(opening_time__gte=params['opening_time'], closing_time__lte=params['closing_time'])
+                serializer = LibrarysSerializers(library, many=True)
+                return Response({'message': 'Biblitecas encontradas', 'libraries': serializer.data},
+                                status=status.HTTP_200_OK)
+
+            if 'delivery' in params:
+                library = libraries.filter(delivery=params['delivery'])
+                serializer = LibrarysSerializers(library, many=True)
+                return Response({'message': 'Biblitecas encontradas', 'libraries': serializer.data},
+                                status=status.HTTP_200_OK)
+
+            if 'minimum_delivery' in params and 'maximum_delivery' in params:
+                library = libraries.filter(minimum_delivery__gte=params['minimum_delivery'], maximum_delivery__lte=params['maximum_delivery'])
+                serializer = LibrarysSerializers(library, many=True)
+                return Response({'message': 'Biblitecas encontradas', 'libraries': serializer.data}, status=status.HTTP_200_OK)
+
             serializer = LibrarysSerializers(libraries, many=True)
-            return Response({'message': 'Biblitecas encontradas', 'libraries': serializer.data}, status=status.HTTP_200_OK)
+            return Response({'message': 'Biblitecas encontradas', 'libraries': serializer.data},
+                            status=status.HTTP_200_OK)
+
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao listar bibliotecas!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
