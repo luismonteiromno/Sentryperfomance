@@ -8,6 +8,7 @@ class BooksPurchaseAdmin(admin.ModelAdmin):
     list_display = ['id', 'user']
     fields = ['user', 'books', 'type_payment', 'date']
     readonly_fields = ['date']
+    date_hierarchy = 'date'
 
 
 admin.site.register(BooksPurchases, BooksPurchaseAdmin)

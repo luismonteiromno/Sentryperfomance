@@ -10,6 +10,7 @@ class BooksAdmin(admin.ModelAdmin):
     list_filter = ['state', 'book_genre', 'publishing_company__name', 'release_year']
     search_fields = ['author__username']
     filter_horizontal = ['author', 'book_genre']
+    date_hierarchy = 'create_at'
 
     fieldsets = (
         ('Informações do Livro',
@@ -22,6 +23,7 @@ class BooksAdmin(admin.ModelAdmin):
             return True
         else:
             return False
+
 
 class CompanysAdmin(admin.ModelAdmin):
     search_fields = ['name', 'owner__username']
