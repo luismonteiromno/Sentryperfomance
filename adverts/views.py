@@ -24,7 +24,6 @@ class AdvertsViewSet(ModelViewSet):
         data = request.data
         try:
             library = Librarys.objects.get(id=data['library_id'])
-            print(user, library.owner_library.all())
             if user in library.owner_library.all():
                 create_at = datetime.strptime(data['create_at'], '%d/%m/%Y %H:%M')
                 expiration = datetime.strptime(data['expiration'], '%d/%m/%Y %H:%M')
