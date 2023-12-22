@@ -4,6 +4,6 @@ from .models import Adverts
 
 class AdvertsSerializers(serializers.ModelSerializer):
     class Meta:
-        depth = 1
+        depth = 2
         model = Adverts
         fields = '__all__'
