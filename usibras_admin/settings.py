@@ -75,7 +75,8 @@ INSTALLED_APPS = [
     'library',
     'purchases',
     'about_us',
-    'payment_methods'
+    'payment_methods',
+    'adverts'
 ]
 ADMIN_SITE_BASE_URL = 'admin/' # default is "admin/
 NOTIFICATION_MODEL = 'adminUsibras.Books'
