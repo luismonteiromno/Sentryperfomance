@@ -12,7 +12,6 @@ from library.models import Librarys
 from datetime import datetime
 
 
-
 class AdvertsViewSet(ModelViewSet):
     queryset = Adverts.objects.all()
     serializer_class = AdvertsSerializers
@@ -39,6 +38,17 @@ class AdvertsViewSet(ModelViewSet):
                                 status=status.HTTP_403_FORBIDDEN)
         except ObjectDoesNotExist:
             return Response({'message': 'Biblioteca anunciante não encontrada!'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao criar anúncio!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def list_adverts(self, request):
+        now = datetime.now()
+        try:
+            adverts = Adverts.objects.filter(create_at__lte=now, expiration__gte=now)
+            serializer = AdvertsSerializers(adverts, many=True)
+            return Response({'message': 'Anúncios encontrados', 'adverts': serializer.data}, status=status.HTTP_200_OK)
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao criar anúncio!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
