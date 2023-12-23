@@ -6,8 +6,9 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response
 
-from .models import Adverts
-from .serializers import AdvertsSerializers
+from .models import Adverts, AdvertsViewed
+from .serializers import AdvertsSerializers, AdvertsViewedSerializers
+from users.models import Users
 from library.models import Librarys
 from datetime import datetime
 
@@ -114,3 +115,28 @@ class AdvertsViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao listar anúncio!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class AdvertsViewedViewSet(ModelViewSet):
+    queryset = AdvertsViewed.objects.all()
+    serializer_class = AdvertsSerializers
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=False, methods=['POST'], permission_classes=[IsAuthenticated])
+    def register_view(self, request):
+        user = request.user
+        data = request.data
+        now = datetime.now()
+        try:
+            # announcement = Adverts.objects.get(id=)
+            AdvertsViewed.objects.create(
+                user_viewed_id=user.id,
+                announcement_id=data['announcement_id'],
+                date=now
+            )
+            return Response({'message': 'Anúncio visualizado com sucesso'}, status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response({'anúncio não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao visualizar anúncio!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
