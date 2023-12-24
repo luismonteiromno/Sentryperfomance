@@ -128,14 +128,15 @@ class AdvertsViewedViewSet(ModelViewSet):
         data = request.data
         now = datetime.now()
         try:
+            announcement = Adverts.objects.get(id=data['announcement_id'], create_at__lte=now, expiration__gte=now)
             AdvertsViewed.objects.create(
                 user_viewed_id=user.id,
-                announcement_id=data['announcement_id'],
+                announcement_id=announcement.id,
                 date=now
             )
             return Response({'message': 'Anúncio visualizado com sucesso'}, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
-            return Response({'anúncio não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'anúncio não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao visualizar anúncio!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -143,11 +144,13 @@ class AdvertsViewedViewSet(ModelViewSet):
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
     def number_advert_views(self, request):
         params = request.query_params
+        now = datetime.now()
         try:
-            announcement = AdvertsViewed.objects.filter(announcement_id=params['announcement_id']).count()
+            announcement_id = Adverts.objects.get(id=params['announcement_id'], create_at__lte=now, expiration__gte=now)
+            announcement = AdvertsViewed.objects.filter(announcement_id=announcement_id).count()
             return Response({'message': 'Quantidades de vezes que o anúncio foi visto', 'count': announcement}, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
-            return Response({'anúncio não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'anúncio não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao listar quantidade de vezes que anúncio foi visto!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
