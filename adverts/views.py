@@ -128,7 +128,6 @@ class AdvertsViewedViewSet(ModelViewSet):
         data = request.data
         now = datetime.now()
         try:
-            # announcement = Adverts.objects.get(id=)
             AdvertsViewed.objects.create(
                 user_viewed_id=user.id,
                 announcement_id=data['announcement_id'],
@@ -140,3 +139,15 @@ class AdvertsViewedViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao visualizar anúncio!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def number_advert_views(self, request):
+        params = request.query_params
+        try:
+            announcement = AdvertsViewed.objects.filter(announcement_id=params['announcement_id']).count()
+            return Response({'message': 'Quantidades de vezes que o anúncio foi visto', 'count': announcement}, status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response({'anúncio não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao listar quantidade de vezes que anúncio foi visto!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
