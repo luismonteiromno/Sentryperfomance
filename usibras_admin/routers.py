@@ -5,7 +5,7 @@ from library.views import LibraryViewSet
 from purchases.views import BooksPurchasesViewSet
 from about_us.views import AboutUsViewSet, TermsOfUseViewSet, PrivacyPoliceViewSet
 from payment_methods.views import PaymentMethodsViewSet
-from adverts.views import AdvertsViewSet
+from adverts.views import AdvertsViewSet, AdvertsViewedViewSet
 
 router = routers.DefaultRouter()
 
@@ -20,3 +20,4 @@ router.register(r'privacy_police', PrivacyPoliceViewSet, basename='privacy_polic
 router.register(r'payment_methods', PaymentMethodsViewSet, basename='payment_methods')
 router.register(r'books_genres', BooksGenreViewSet, basename='books_genres')
 router.register(r'adverts', AdvertsViewSet, basename='adverts')
+router.register(r'adverts_viewed', AdvertsViewedViewSet, basename='adverts_viewed')
