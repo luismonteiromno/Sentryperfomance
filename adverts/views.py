@@ -50,7 +50,7 @@ class AdvertsViewSet(ModelViewSet):
     def list_adverts(self, request):
         now = datetime.now()
         try:
-            adverts = Adverts.objects.exclude(create_at__gte=now, expiration__lte=now)
+            adverts = Adverts.objects.filter(create_at__lte=now, expiration__gte=now)
             serializer = AdvertsSerializers(adverts, many=True)
             return Response({'message': 'Anúncios encontrados', 'adverts': serializer.data}, status=status.HTTP_200_OK)
         except Exception as error:
