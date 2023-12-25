@@ -5,6 +5,7 @@ from users.models import Users
 
 class Adverts(models.Model):
     announcement = models.ImageField('Anúncio')
+    description = models.TextField('Descrição do anúncio', max_length=320, default='')
     library = models.ForeignKey(Librarys, verbose_name='Biblioteca anunciante', related_name='library_adverts', on_delete=models.CASCADE)
     create_at = models.DateTimeField('Data de início')
     expiration = models.DateTimeField('Data de expiração')
