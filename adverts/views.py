@@ -148,7 +148,12 @@ class AdvertsViewedViewSet(ModelViewSet):
         try:
             announcement_id = Adverts.objects.get(id=params['announcement_id'], create_at__lte=now, expiration__gte=now)
             announcement = AdvertsViewed.objects.filter(announcement_id=announcement_id).count()
-            return Response({'message': 'Quantidades de vezes que o anúncio foi visto', 'count': announcement}, status=status.HTTP_200_OK)
+            serializer = AdvertsSerializers(announcement_id)
+            return Response({
+                'message': 'Quantidades de vezes que o anúncio foi visto',
+                'count': announcement,
+                'announcement': serializer.data
+            }, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
             return Response({'message': 'anúncio não encontrado!'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as error:
