@@ -36,8 +36,8 @@ class AdvertsBooks(models.Model):
     announcement = models.ImageField('Anúncio')
     book = models.ForeignKey(Books, verbose_name='Anúncio do Livro', on_delete=models.CASCADE)
     description = models.TextField('Descrição do Anúncio', max_length=320, default='')
-    create_at = models.DateTimeField('Criado em', auto_now_add=True)
-    expiration = models.DateTimeField('Expira em', auto_now_add=True)
+    create_at = models.DateTimeField('Criado em')
+    expiration = models.DateTimeField('Expira em')
 
     def __str__(self):
         return str(f"{self.announcement} - {self.book}")
