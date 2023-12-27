@@ -207,3 +207,19 @@ class AdvertsBooksViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao criar anúncio!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def list_adverts_books(self, request):
+        now = datetime.now()
+        try:
+            adverts = AdvertsBooks.objects.filter(create_at__lte=now, expiration__gte=now)
+            serializer = AdvertsBooksSerializers(adverts, many=True)
+            return Response({'message': 'Anúncios encontrados', 'adverts': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao listar anúncios!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    # def list_adverts_by_books(self, request):
+    #     params = request.query_params
+    #     try:
