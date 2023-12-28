@@ -219,7 +219,14 @@ class AdvertsBooksViewSet(ModelViewSet):
             print(error)
             return Response({'message': 'Erro ao listar anúncios!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    # @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
-    # def list_adverts_by_books(self, request):
-    #     params = request.query_params
-    #     try:
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def list_adverts_by_book(self, request):
+        params = request.query_params
+        try:
+            book = AdvertsBooks.objects.filter(book_id=params['book_id'])
+            serializer = AdvertsBooksSerializers(book, many=True)
+            return Response({'message': 'Anúncios sobre o livro encontrados', 'book_adverts': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao listar anúncios!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
