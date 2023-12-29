@@ -29,6 +29,12 @@ class UsersViewSet(ModelViewSet):
                 company_owner=data['company_owner'],
                 library_owner=data['library_owner']
             )
+            for add_books in data['favorite_books']:
+                user.favorite_books.add(int(add_books))
+
+            for add_libraries in data['favorite_libraries']:
+                user.favorite_libraries.add(int(add_libraries))
+
             user.set_password(data['password'])
             Token.objects.create(user=user)
             return Response({'message': 'Usuário cadastrado com sucesso'}, status=status.HTTP_200_OK)
@@ -41,17 +47,29 @@ class UsersViewSet(ModelViewSet):
         user = request.user
         data = request.data
         try:
-            user = Users.objects.filter(pk=user.id).update(
-                username=data['username'],
-                full_name=data['full_name'],
-                email=data['email'],
-                phone=data['phone'],
-                address=data['address'],
-                company_owner=data['company_owner'],
-                library_owner=data['library_owner']
-            )
+            user = Users.objects.get(pk=user.id)
+            user.username = data['username']
+            user.full_name = data['full_name']
+            user.email = data['email']
+            user.phone = data['phone']
+            user.address = data['address']
+            user.company_owner = data['company_owner']
+            user.library_owner = data['library_owner']
+
             if user.set_password != data['password']:
                 user.set_password(data['password'])
+
+            if user.favorite_books != data['favorite_books']:
+                user.favorite_books.clear()
+                for add_books in data['favorite_books']:
+                    user.favorite_books.add(int(add_books))
+
+            if user.favorite_libraries != data['favorite_libraries']:
+                user.favorite_libraries.clear()
+                for add_libraries in data['favorite_libraries']:
+                    user.favorite_libraries.add(int(add_libraries))
+
+            user.save()
             return Response({'message': 'Usuário atualizado com sucesso'}, status=status.HTTP_200_OK)
         except Exception as error:
             print(error)
