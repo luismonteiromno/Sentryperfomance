@@ -13,6 +13,8 @@ from library.models import Librarys
 from adminUsibras.models import Books
 from datetime import datetime
 
+from utils import send_email
+
 
 class AdvertsViewSet(ModelViewSet):
     queryset = Adverts.objects.all()
@@ -191,13 +193,23 @@ class AdvertsBooksViewSet(ModelViewSet):
                     return Response(
                         {'message': 'A data de criação do anúncio não pode ser maior/igual a data de expiração!'},
                         status=status.HTTP_400_BAD_REQUEST)
-                AdvertsBooks.objects.create(
+
+                ad = AdvertsBooks.objects.create(
                     announcement=data['announcement'],
                     book_id=book.id,
                     description=data['description'],
                     create_at=create_at,
                     expiration=expiration
                 )
+                users = Users.objects.all()
+                for user in users:
+                    if book in user.favorite_books.all():
+                        send_email(
+                            user.email,
+                            'Novo anúncio de um de seus livros favoritos!',
+                            f'Livro {book} - Descrição do anúncio: {ad.description}'
+                        )
+
                 return Response({'message': 'Anúncio criado com sucesso!'}, status=status.HTTP_200_OK)
             else:
                 return Response({'message': 'Somente o(s) usuário(s) dono(s) desta biblioteca pode(m) criar anúncios!'},
