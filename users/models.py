@@ -15,6 +15,8 @@ class Users(AbstractUser):
     email = models.EmailField('email', unique=True)
     phone = models.CharField('Telefone', max_length=20, unique=True, blank=True, null=True)
     address = models.CharField('Endereço', max_length=50, blank=True, null=True)
+    favorite_books = models.ManyToManyField('adminUsibras.Books', verbose_name='Livros Favoritos', blank=True, related_name='user_favorite_books')
+    favorite_libraries = models.ManyToManyField('library.librarys', verbose_name='Bibliotecas Favoritas', blank=True, related_name='user_favorite_libraries')
     company_owner = models.BooleanField('Dono de alguma companhia?', default=False)
     library_owner = models.BooleanField('Dono de alguma biblioteca?', default=False)
 
