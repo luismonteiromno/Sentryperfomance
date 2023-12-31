@@ -14,7 +14,8 @@ class BooksAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Informações do Livro',
-         {'fields': ('title', 'book_cover', 'synopsis', 'price', 'author', 'release_year', 'state', 'pages', 'book_genre', 'publishing_company', 'in_stock')}),
+         {'fields': ('title', 'book_cover', 'synopsis', 'price', 'author', 'release_year', 'state', 'pages',
+                     'book_genre', 'publishing_company', 'in_stock')}),
         ('Lançamento', {'fields': ('create_at',)}),
     )
 
