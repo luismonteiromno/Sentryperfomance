@@ -15,7 +15,7 @@ from payment_methods.models import PaymentMethods
 from .models import BooksPurchases
 from .serializers import BooksPurchasesSerializers
 
-from utils import send_email
+from utils import send_email_of_purchase
 
 
 class BooksPurchasesViewSet(ModelViewSet):
@@ -30,7 +30,7 @@ class BooksPurchasesViewSet(ModelViewSet):
         try:
             with transaction.atomic():
                 now = datetime.now()
-                book_ids = [book_id for book_id in data['books_id'].split(',')]
+                book_ids = [book_id for book_id in data['books_id']]
 
                 if Books.objects.filter(id__in=book_ids, in_stock=False).exists():
                     return Response({'message': 'Alguns livros não estão em estoque. A compra não pode ser concluída.'},
@@ -41,20 +41,14 @@ class BooksPurchasesViewSet(ModelViewSet):
                 books_purchase = BooksPurchases.objects.create(
                     user_id=user.id,
                     type_payment=type_payment,
+                    came_via_ad=data['came_via_ad'],
                     date=now
                 )
 
-                for purchase in book_ids:
+                for purchase in data['books_id']:
                     books_purchase.books.add(int(purchase))
 
-                for owner_email in books_purchase.books.all():
-                    if type_payment not in owner_email.available_in_libraries.type_payments_accepted.all():
-                        return Response(
-                            {'message': 'Método de pagamento não aceito pela biblioteca! '},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-                    for email in owner_email.available_in_libraries.owner_library.all():
-                        send_email(email.email, 'Nova compra feita!', f'Compra feita na biblioteca {owner_email.available_in_libraries}')
+                send_email_of_purchase(books_purchase, type_payment)
 
                 return Response({'message': 'Compra feita com sucesso'}, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
