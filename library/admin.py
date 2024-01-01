@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Librarys
+from users.models import Users
 from django import forms
 from django.forms import ValidationError
 
@@ -39,5 +40,11 @@ class LibraryAdmin(admin.ModelAdmin):
     list_display = ['id', 'name']
     list_filter = ['delivery']
 
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == 'employees':
+            kwargs['queryset'] = Users.objects.filter(type_user='employee')
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
 
 admin.site.register(Librarys, LibraryAdmin)
+
