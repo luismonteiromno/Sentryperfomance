@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Librarys
+from users.models import Users
 from django import forms
 from django.forms import ValidationError
 
@@ -29,15 +30,21 @@ class FormLibrary(forms.ModelForm):
 
 class LibraryAdmin(admin.ModelAdmin):
     fieldsets = (
-        ('Informações da Biblioteca', {'fields': ('owner_library', 'name', 'partner_companies', 'books_for_sale',
+        ('Informações da Biblioteca', {'fields': ('owner_library', 'employees', 'name', 'partner_companies', 'books_for_sale',
                                                   'type_payments_accepted', 'opening_time', 'closing_time')}),
         ('Localização da Biblioteca', {'fields': ('address', 'street', 'number', 'cep')}),
         ('Entrega', {'fields': ('delivery', 'minimum_delivery', 'maximum_delivery')})
     )
     form = FormLibrary
-    filter_horizontal = ['owner_library', 'type_payments_accepted', 'partner_companies', 'books_for_sale']
+    filter_horizontal = ['owner_library', 'employees', 'type_payments_accepted', 'partner_companies', 'books_for_sale']
     list_display = ['id', 'name']
     list_filter = ['delivery']
 
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == 'employees':
+            kwargs['queryset'] = Users.objects.filter(type_user='employee')
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
 
 admin.site.register(Librarys, LibraryAdmin)
+

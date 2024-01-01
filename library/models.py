@@ -7,6 +7,7 @@ from payment_methods.models import PaymentMethods
 
 class Librarys(models.Model):
     owner_library = models.ManyToManyField(Users, verbose_name='Dono', related_name='owner_library')
+    employees = models.ManyToManyField('users.Users', verbose_name='Funcionários', related_name='users_employees')
     name = models.CharField('Nome da livraria', max_length=100)
     address = models.CharField('Endereço', max_length=50)
     street = models.CharField('Rua', max_length=50)

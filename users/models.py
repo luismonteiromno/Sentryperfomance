@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 TYPE_USER = (
-    ('default', 'Padrão'),
+    ('client', 'Cliente'),
+    ('employee', 'Funcionário'),
     ('owner', 'Dono'),
     ('admin', 'Admin')
 )
@@ -10,7 +11,7 @@ TYPE_USER = (
 
 class Users(AbstractUser):
     username = models.CharField('username', max_length=40)
-    type_user = models.CharField('Tipo do usuário', choices=TYPE_USER, default='default', max_length=100)
+    type_user = models.CharField('Tipo do usuário', choices=TYPE_USER, default='client', max_length=100)
     full_name = models.CharField('Nome completo', max_length=100, default='')
     email = models.EmailField('email', unique=True)
     phone = models.CharField('Telefone', max_length=20, unique=True, blank=True, null=True)
