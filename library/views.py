@@ -78,14 +78,13 @@ class LibraryViewSet(ModelViewSet):
 
                 for employee in employees:
                     users = Users.objects.filter(id=employee)
-                    if users:
-                        for user in users:
-                            if user.type_user != 'employee':
-                                return Response({
-                                    'message': f'O usuário {user.username} não é um funcionário!'
-                                }, status=status.HTTP_400_BAD_REQUEST)
+                    for user in users:
+                        if user.type_user != 'employee':
+                            return Response({
+                                'message': f'O usuário {user.username} não é um funcionário!'
+                            }, status=status.HTTP_400_BAD_REQUEST)
 
-                            library.employees.add(user.id)
+                        library.employees.add(user.id)
 
                 for company in companies:
                     library.partner_companies.add(int(company))
