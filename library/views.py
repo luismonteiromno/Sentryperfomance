@@ -16,6 +16,8 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 from datetime import datetime
 
+from users.models import Users
+
 
 class LibraryViewSet(ModelViewSet):
     queryset = Librarys.objects.all()
@@ -31,6 +33,8 @@ class LibraryViewSet(ModelViewSet):
                 companies = data['partner_companies'].split(',')
                 books_sale = data['books_for_sale'].split(',')
                 type_payments_accepted = data['type_payments_accepted'].split(',')
+                employees = data['employees'].split(',')
+
                 if not companies or all(company.strip() == '' for company in companies):
                     return Response({'message': 'Preencha o campo de empresas parceiras!'},
                                     status=status.HTTP_400_BAD_REQUEST)
@@ -69,6 +73,20 @@ class LibraryViewSet(ModelViewSet):
                 )
                 library.owner_library.add(user)
 
+                if not employees:
+                    return Response({'message': 'Preencha o campo de funcionários!'}, status=status.HTTP_400_BAD_REQUEST)
+
+                for employee in employees:
+                    users = Users.objects.filter(id=employee)
+                    if users:
+                        for user in users:
+                            if user.type_user != 'employee':
+                                return Response({
+                                    'message': f'O usuário {user.username} não é um funcionário!'
+                                }, status=status.HTTP_400_BAD_REQUEST)
+
+                            library.employees.add(user.id)
+
                 for company in companies:
                     library.partner_companies.add(int(company))
 
@@ -103,6 +121,7 @@ class LibraryViewSet(ModelViewSet):
 
             if user not in library.owner_library.all():
                 return Response({'message': 'Apenas o dono pode atualizar à biblioteca!'}, status=status.HTTP_401_UNAUTHORIZED)
+
             library.name = data['name']
             library.address = data['address']
             library.street = data['street']
@@ -116,9 +135,19 @@ class LibraryViewSet(ModelViewSet):
             library.delivery = data['delivery']
             library.minimum_delivery = data['minimum_delivery']
             library.maximum_delivery = data['maximum_delivery']
+            employees = data['employees'].split(',')
             partner_companies = data['partner_companies'].split(',')
             books_for_sale = data['books_for_sale'].split(',')
             type_payments_accepted = data['type_payments_accepted'].split(',')
+
+            if library.employees != employees:
+                if not employees:
+                    return Response({'message': 'Preencha o campo de funcionários!'}, status=status.HTTP_400_BAD_REQUEST)
+
+                library.employees.clear()
+                for employee in employees:
+                    library.employees.add(int(employee))
+
 
             if library.partner_companies != partner_companies:
                 if not partner_companies:
@@ -282,7 +311,6 @@ class LibraryViewSet(ModelViewSet):
         try:
             libraries = Librarys.objects.all()
             if 'opening_time' in params and 'closing_time' in params:
-                print('ggg')
                 library = libraries.filter(opening_time__gte=params['opening_time'], closing_time__lte=params['closing_time'])
                 serializer = LibrarysSerializers(library, many=True)
                 return Response({'message': 'Biblitecas encontradas', 'libraries': serializer.data},
