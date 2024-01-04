@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Adverts, AdvertsViewed, AdvertsBooks
+from .models import Adverts, AdvertsViewed, AdvertsBooks, AdvertsBookViewed
 
 
 class AdvertsAdmin(admin.ModelAdmin):
@@ -12,8 +12,10 @@ class AdvertsViewedAdmin(admin.ModelAdmin):
 
 class AdvertsBooksAdmin(admin.ModelAdmin):
     list_display = ['announcement', 'book', 'create_at', 'expiration']
+    list_display_links = ['book']
 
 
 admin.site.register(Adverts, AdvertsAdmin)
 admin.site.register(AdvertsViewed, AdvertsViewedAdmin)
 admin.site.register(AdvertsBooks, AdvertsBooksAdmin)
+admin.site.register(AdvertsBookViewed)

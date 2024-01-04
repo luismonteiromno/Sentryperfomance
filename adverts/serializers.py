@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Adverts, AdvertsViewed, AdvertsBooks
+from .models import Adverts, AdvertsViewed, AdvertsBooks, AdvertsBookViewed
 
 
 class AdvertsSerializers(serializers.ModelSerializer):
@@ -19,4 +19,11 @@ class AdvertsViewedSerializers(serializers.ModelSerializer):
 class AdvertsBooksSerializers(serializers.ModelSerializer):
     class Meta:
         model = AdvertsBooks
+        fields = '__all__'
+
+
+class AdvertsBooksViewedSerializers(serializers.ModelSerializer):
+    class Meta:
+        depth = 1
+        model = AdvertsBookViewed
         fields = '__all__'
