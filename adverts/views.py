@@ -258,6 +258,7 @@ class AdvertsBooksViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao registrar visualização!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
     def count_views_adverts_book(self, request):
         params = request.query_params
