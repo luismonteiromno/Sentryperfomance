@@ -45,3 +45,16 @@ class AdvertsBooks(models.Model):
     class Meta:
         verbose_name = 'Anúncio de Livros'
         verbose_name_plural = 'Anúncios de Livros'
+
+
+class AdvertsBookViewed(models.Model):
+    user_viewed = models.ForeignKey(Users, verbose_name='Visualizado pelo usuário', related_name='user_viewed_book_advert', on_delete=models.CASCADE)
+    announcement = models.ForeignKey(AdvertsBooks, verbose_name='Anúncio visualizado', related_name='advert_book_viewed', on_delete=models.CASCADE)
+    date = models.DateTimeField('Data da visualização', auto_now_add=True)
+
+    def __str__(self):
+        return str(f'{self.user_viewed} - {self.announcement} - {self.date}')
+
+    class Meta:
+        verbose_name = 'Anúncio de Livro Visualizado'
+        verbose_name_plural = 'Anúncios de Livros Visualizados'

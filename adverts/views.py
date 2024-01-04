@@ -6,8 +6,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response
 
-from .models import Adverts, AdvertsViewed, AdvertsBooks
-from .serializers import AdvertsSerializers, AdvertsViewedSerializers, AdvertsBooksSerializers
+from .models import Adverts, AdvertsViewed, AdvertsBooks, AdvertsBookViewed
+from .serializers import AdvertsSerializers, AdvertsViewedSerializers, AdvertsBooksSerializers, AdvertsBooksViewedSerializers
 from users.models import Users
 from library.models import Librarys
 from adminUsibras.models import Books
@@ -155,7 +155,7 @@ class AdvertsViewedViewSet(ModelViewSet):
             serializer = AdvertsSerializers(announcement_id)
             return Response({
                 'message': 'Quantidades de vezes que o anúncio foi visto',
-                'count': announcement,
+                'views': announcement,
                 'announcement': serializer.data
             }, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
@@ -234,6 +234,7 @@ class AdvertsBooksViewSet(ModelViewSet):
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
     def list_adverts_by_book(self, request):
         params = request.query_params
+        now = datetime.now()
         try:
             book = AdvertsBooks.objects.filter(book_id=params['book_id'])
             serializer = AdvertsBooksSerializers(book, many=True)
@@ -241,4 +242,38 @@ class AdvertsBooksViewSet(ModelViewSet):
         except Exception as error:
             print(error)
             return Response({'message': 'Erro ao listar anúncios!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['POST'], permission_classes=[IsAuthenticated])
+    def register_view_book(self, request):
+        user = request.user
+        data = request.data
+        now = datetime.now()
+        try:
+            AdvertsBookViewed.objects.create(
+                user_viewed_id=user.id,
+                announcement_id=data['announcement_book_id'],
+                date=now
+            )
+            return Response({'message': 'Visualização registrada com sucesso'}, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao registrar visualização!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def count_views_adverts_book(self, request):
+        params = request.query_params
+        now = datetime.now()
+        try:
+            announcement = AdvertsBooks.objects.get(id=params['announcement_book_id'], create_at__lte=now, expiration__gte=now)
+            announcement_viewed = AdvertsBookViewed.objects.filter(announcement_id=params['announcement_book_id']).count()
+            serializer = AdvertsBooksSerializers(announcement)
+            return Response({
+                'message': 'Quantidades de vezes que o anúncio foi visto',
+                'views': announcement_viewed,
+                'announcement': serializer.data
+            }, status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response({'message': 'Erro ao contar número de visualizações do anúncio!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         
