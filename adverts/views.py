@@ -276,4 +276,3 @@ class AdvertsBooksViewSet(ModelViewSet):
             print(error)
             return Response({'message': 'Erro ao contar número de visualizações do anúncio!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        
