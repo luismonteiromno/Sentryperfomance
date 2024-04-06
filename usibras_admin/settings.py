@@ -175,6 +175,7 @@ STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 EMAIL_FROM = 'contato@deway.com.br'
 EMAIL_HOST=env('EMAIL_HOST')
